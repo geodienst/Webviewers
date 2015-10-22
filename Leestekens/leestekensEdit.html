@@ -69,7 +69,9 @@
     <script>
       var map;
 	  var myEditor;
-	  var layer;
+	  var editLayer;
+	  var viewLayer;
+	  var basemapGallery;
       function init(leesteken, username, editType){
       require([
         "esri/map", 
@@ -77,6 +79,7 @@
 
         "esri/layers/ArcGISTiledMapServiceLayer",
         "esri/layers/FeatureLayer",
+		"esri/layers/ArcGISDynamicMapServiceLayer",
 
         "esri/Color",
         "esri/symbols/SimpleMarkerSymbol",
@@ -100,7 +103,7 @@
         "dojo/domReady!"
       ], function(
         Map, GeometryService,
-        ArcGISTiledMapServiceLayer, FeatureLayer,
+        ArcGISTiledMapServiceLayer, FeatureLayer, ArcGISDynamicMapServiceLayer,
         Color, SimpleMarkerSymbol, SimpleLineSymbol, 
 		BasemapLayer, Basemap,BasemapGallery,
         Editor, TemplatePicker, Button,LocateButton,
@@ -114,12 +117,13 @@
         map = new Map("map", { 
           center: [5.314334,52.038308],
           zoom: 8,
-          slider: true 
+          slider: true
+		  
         });
 
         map.on("layers-add-result", initEditor);
         //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
-		var basemapGallery = new BasemapGallery({
+		 basemapGallery = new BasemapGallery({
 			showArcGISBasemaps: false,
 			map: map
 			}, "basemapGallery");
@@ -143,28 +147,40 @@
 		var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/Icon_PDOK_BRT_RD.png"});
 		basemapGallery.add(basemapBonne);
 		
-        
+		
+		var definitionQueryEditLayer = "NAAM  = '"+leesteken+"' AND NAAMTOEVOEGER ='"+username+"'";
+		var definitionQueryViewLayer = "NAAM  = '"+leesteken+"' AND NAAMTOEVOEGER <>'"+username+"'";
+        viewLayer = new ArcGISDynamicMapServiceLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/MapServer");
+		var layerDefinitions= []
 		if (editType ==="Polygon"){
-			layer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/2", {
+			editLayer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/2", {
 			  mode: FeatureLayer.MODE_ONDEMAND, 
 			  outFields: ['*']
 			});
+			viewLayer.setVisibleLayers([2]);
+			layerDefinitions[2] = definitionQueryViewLayer;
 		}
 		else if(editType ==="Line"){
-			layer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/1", {
+			editLayer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/1", {
 			  mode: FeatureLayer.MODE_ONDEMAND, 
 			  outFields: ['*']
 			});
+			viewLayer.setVisibleLayers([1]);
+			layerDefinitions[1] = definitionQueryViewLayer;
 		}
 		else if(editType==="Point"){
-			layer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/0", {
+			editLayer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/0", {
 			  mode: FeatureLayer.MODE_ONDEMAND, 
 			  outFields: ['*']
 			});
+			viewLayer.setVisibleLayers([0]);
+			layerDefinitions[0] = definitionQueryViewLayer;
 		}
-        layer.setDefinitionExpression("NAAM  = '"+leesteken+"' AND NAAMTOEVOEGER ='"+username+"'");
+        editLayer.setDefinitionExpression(definitionQueryEditLayer);
+		viewLayer.setLayerDefinitions(layerDefinitions);
+		
 
-        map.addLayers([layer]);
+        map.addLayers([viewLayer,editLayer]);
 		
 		var geoLocate = new LocateButton({
 		  map: map,
@@ -174,10 +190,11 @@
 		geoLocate.startup();
 
         function initEditor(evt) {
+			var templateLayers = [];
+		  for (var i = 0; i< evt.layers.length;i++){
+		   	if (evt.layers[i].layer.declaredClass ==="esri.layers.FeatureLayer"){templateLayers.push(evt.layers[i].layer);}
+		  } 
 		  map.setExtent(layerPDOK.fullExtent)
-          var templateLayers = arrayUtils.map(evt.layers, function(result){
-            return result.layer;
-          });
           var templatePicker = new TemplatePicker({
             featureLayers: templateLayers,
             rows: "auto",
@@ -185,8 +202,8 @@
           }, "templateDiv");
           templatePicker.startup();
 
-          var layers = arrayUtils.map(evt.layers, function(result) {
-            return { featureLayer: result.layer };
+          var layers = arrayUtils.map(templateLayers, function(result) {
+            return { featureLayer: result };
           });
           var settings = {
             map: map,
@@ -210,8 +227,8 @@
           myEditor.startup();
 		  
 		  //zet standaardwaarden op de verborgen velden gebaseerd op de initalisatie
-		  layer.templates[0].prototype.attributes.NAAMTOEVOEGER = username;
-		  layer.templates[0].prototype.attributes.NAAM = leesteken;
+		  editLayer.templates[0].prototype.attributes.NAAMTOEVOEGER = username;
+		  editLayer.templates[0].prototype.attributes.NAAM = leesteken;
 		  myEditor.attributeInspector.layerInfos[0].hideFields.push( "NAAM");
 		  myEditor.attributeInspector.layerInfos[0].hideFields.push( "NAAMTOEVOEGER");
 		  attInspector = myEditor.attributeInspector;
@@ -228,7 +245,7 @@
         }
       });
 	  }
-	  init("Bargeres","joel", "Point");
+	  init("Bargeres","mark", "Point");
     </script>
   </head>
   <body class="claro">
