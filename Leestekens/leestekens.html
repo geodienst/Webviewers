@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+  <html>
+  <head>
+  <title>Leestekens</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+      
+      <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/dojo/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+  <style>
+    html,body,#container,#mapDiv{
+      padding:0;
+      margin:0;
+      position: absolute;
+        left: 0px;
+		right: 0px;
+		top:0px;
+		bottom: 0px;
+    }
+	 #LocateButton {
+      position: absolute;
+      top: 95px;
+      left: 20px;
+      z-index: 50;
+    }
+       
+  </style>
+
+  <script>var dojoConfig = {
+    locale: "nl",
+    parseOnLoad: true};</script>
+  <script src="http://js.arcgis.com/3.14compact/"></script>
+  <script>
+	var map
+	function init(leesteken){
+		
+		webmapId = "8f29d2de779844d4b4008e51be8a2405";
+		var leesteken =leesteken;
+
+		require([
+		  "esri/map",
+		  "esri/tasks/GeometryService",
+		  "esri/arcgis/utils",
+		  "esri/dijit/Geocoder",
+		  "dijit/form/Button",
+		  "esri/dijit/LocateButton",
+		  
+          "esri/dijit/BasemapLayer", 
+		  "esri/dijit/Basemap",
+		  "esri/dijit/BasemapGallery",
+		  
+	      "esri/tasks/locator", "esri/graphic", "esri/lang","esri/geometry/Extent",
+		  "esri/geometry/webMercatorUtils",
+		  "dojo/domReady!"
+		], function (Map, GeometryService,arcgisUtils, Geocoder,Button,LocateButton,
+		    BasemapLayer, Basemap,BasemapGallery,
+			Locator, Graphic,esriLang, Extent,
+		    webMercatorUtils) {
+			arcgisUtils.createMap(webmapId, "mapDiv", {
+				mapOptions: {               
+					minZoom: 3
+				},
+				geometryServiceURL: "http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer"
+		}).then(function (response){
+			esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+			map = response.map;
+			for (var i = 0; i< map.graphicsLayerIds.length; i++){
+				var layer = map.getLayer(map.graphicsLayerIds[i]);
+				layer.setDefinitionExpression("NAAM  = '"+leesteken+"'");
+			}
+			map.setExtent(map.extent);
+			
+			var geoLocate = new LocateButton({
+			  map: map,
+			  highlightLocation: false
+			  }, "LocateButton"
+			);
+			geoLocate.startup();
+			var basemapGallery = new BasemapGallery({
+				showArcGISBasemaps: false,
+				map: map
+			  }, "basemapGallery");
+			  basemapGallery.startup();
+			  
+			  basemapGallery.on("error", function(msg) {
+				console.log("basemap gallery error:  ", msg);
+			  });
+			  	var baselayerPDOK = new BasemapLayer({url:"https://services.arcgisonline.nl/ArcGIS/rest/services/Basiskaarten/PDOK_BRT/MapServer"});
+			var basemapPDOK = new Basemap({layers:[baselayerPDOK],title:"PDOK",thumbnailUrl:"images/Icon_PDOK_BRT_RD.png"});
+			basemapGallery.add(basemapPDOK);
+			
+			
+			var baselayerLufo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Luchtfoto/Luchtfoto/MapServer"});
+			var basemapLufo = new Basemap({layers:[baselayerLufo],title:"Luchtfoto",thumbnailUrl:"images/Icon_PDOK_BRT_RD.png"});
+			basemapGallery.add(basemapLufo);
+			
+			var baselayerBonne = new BasemapLayer({url:"https://geo.rug.nl/arcgis/rest/services/HistorischeKaarten/Bonnebladen/ImageServer"});
+			var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/Icon_PDOK_BRT_RD.png"});
+			basemapGallery.add(basemapBonne);
+			});
+		
+			 
+		});
+	}
+	init("Bargeres");
+  </script>
+  </head>
+
+  <body class="claro">
+      <div id="container">
+          <div id="mapDiv" data-dojo-type="dijit/layout/ContentPane"
+               data-dojo-props="region:'center'">
+			<div id="LocateButton"></div>
+			<div style="position:absolute; right:15px; top:15px; z-Index:999;">
+			<div data-dojo-type="dijit/TitlePane" 
+				 data-dojo-props="title:'Achtergrondkaart', closable:false, open:false">
+			  <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:120px; overflow:auto;">
+				<div id="basemapGallery"></div>
+			  </div>
+			</div>
+		  </div>
+          </div>
+                   
+      </div>
+      <img src="https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/0/50/attachments/2" />
+  </body>
+  </html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>Edit Leestekens</title>
+
+    <link rel="stylesheet" href="http://js.arcgis.com/3.14/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.14/esri/css/esri.css">
+    <style>
+      html,body{height:100%;width:100%;margin:0;overflow:hidden;}
+	  
+      #map{
+        padding:0;
+      margin:0;
+      position: absolute;
+        left: 0px;
+		right: 0px;
+		top:0px;
+		bottom: 0px;
+      }
+      #header{
+        font-size: 1.1em;
+        font-family: sans-serif;
+        padding-left: 1em;
+        padding-top:4px;
+        color:#660000;
+      }
+	  .groupLabel{
+		display:none;
+	  }
+	  #templateDiv{
+		right:15px;
+		top:15px;
+		height:100px;
+		width:100px;
+		position: absolute;
+		overflow:hidden;
+		padding:2px;
+		z-index: 50;		
+		border-width:1px;
+		border-color:#000000;		
+		background-color: #FFFFFF;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		cursor: pointer;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		-o-border-radius: 5px;
+		border-radius: 5px;
+	  }
+	  #LocateButton {
+      position: absolute;
+      top: 95px;
+      left: 20px;
+      z-index: 50;
+    }
+	.saveButton{
+		float:right;
+		margin: 0em;
+	}
+
+      .dj_ie .infowindow .window .top .right .user .content { position: relative; }
+      .dj_ie .simpleInfoWindow .content { position: relative; }
+    </style>
+    
+    <script src="http://js.arcgis.com/3.14/"></script>
+    <script>
+      var map;
+	  var myEditor;
+	  var layer;
+      function init(leesteken, username, editType){
+      require([
+        "esri/map", 
+        "esri/tasks/GeometryService",
+
+        "esri/layers/ArcGISTiledMapServiceLayer",
+        "esri/layers/FeatureLayer",
+
+        "esri/Color",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/symbols/SimpleLineSymbol",
+		
+		"esri/dijit/BasemapLayer", 
+		"esri/dijit/Basemap",
+		"esri/dijit/BasemapGallery",
+
+        "esri/dijit/editing/Editor",
+        "esri/dijit/editing/TemplatePicker",
+		"dijit/form/Button",
+		"esri/dijit/LocateButton",
+
+        "esri/config",
+        "dojo/i18n!esri/nls/jsapi",
+
+        "dojo/_base/array", "dojo/parser", "dojo/keys","dojo/dom-construct",
+
+        "dijit/layout/BorderContainer", "dijit/layout/ContentPane", 
+        "dojo/domReady!"
+      ], function(
+        Map, GeometryService,
+        ArcGISTiledMapServiceLayer, FeatureLayer,
+        Color, SimpleMarkerSymbol, SimpleLineSymbol, 
+		BasemapLayer, Basemap,BasemapGallery,
+        Editor, TemplatePicker, Button,LocateButton,
+        esriConfig, jsapiBundle,
+        arrayUtils, parser, keys,domConstruct
+      ) {
+        parser.parse();       
+
+        esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+        
+        map = new Map("map", { 
+          center: [5.314334,52.038308],
+          zoom: 8,
+          slider: true 
+        });
+
+        map.on("layers-add-result", initEditor);
+        //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
+		var basemapGallery = new BasemapGallery({
+			showArcGISBasemaps: false,
+			map: map
+			}, "basemapGallery");
+		basemapGallery.startup();
+
+		basemapGallery.on("error", function(msg) {
+			console.log("basemap gallery error:  ", msg);
+		});
+		
+		var baselayerPDOK = new BasemapLayer({url:"https://services.arcgisonline.nl/ArcGIS/rest/services/Basiskaarten/PDOK_BRT/MapServer"});
+		var basemapPDOK = new Basemap({layers:[baselayerPDOK],title:"PDOK",thumbnailUrl:"images/Icon_PDOK_BRT_RD.png"});
+		basemapGallery.add(basemapPDOK);
+		var layerPDOK = new ArcGISTiledMapServiceLayer("https://services.arcgisonline.nl/ArcGIS/rest/services/Basiskaarten/PDOK_BRT/MapServer");
+		map.addLayer(layerPDOK);
+		
+		var baselayerLufo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Luchtfoto/Luchtfoto/MapServer"});
+		var basemapLufo = new Basemap({layers:[baselayerLufo],title:"Luchtfoto",thumbnailUrl:"images/Icon_PDOK_BRT_RD.png"});
+		basemapGallery.add(basemapLufo);
+		
+		var baselayerBonne = new BasemapLayer({url:"https://geo.rug.nl/arcgis/rest/services/HistorischeKaarten/Bonnebladen/ImageServer"});
+		var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/Icon_PDOK_BRT_RD.png"});
+		basemapGallery.add(basemapBonne);
+		
+        
+		if (editType ==="Polygon"){
+			layer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/2", {
+			  mode: FeatureLayer.MODE_ONDEMAND, 
+			  outFields: ['*']
+			});
+		}
+		else if(editType ==="Line"){
+			layer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/1", {
+			  mode: FeatureLayer.MODE_ONDEMAND, 
+			  outFields: ['*']
+			});
+		}
+		else if(editType==="Point"){
+			layer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/0", {
+			  mode: FeatureLayer.MODE_ONDEMAND, 
+			  outFields: ['*']
+			});
+		}
+        layer.setDefinitionExpression("NAAM  = '"+leesteken+"' AND NAAMTOEVOEGER ='"+username+"'");
+
+        map.addLayers([layer]);
+		
+		var geoLocate = new LocateButton({
+		  map: map,
+		  highlightLocation: false
+		  }, "LocateButton"
+		);
+		geoLocate.startup();
+
+        function initEditor(evt) {
+		  map.setExtent(layerPDOK.fullExtent)
+          var templateLayers = arrayUtils.map(evt.layers, function(result){
+            return result.layer;
+          });
+          var templatePicker = new TemplatePicker({
+            featureLayers: templateLayers,
+            rows: "auto",
+            columns: 3
+          }, "templateDiv");
+          templatePicker.startup();
+
+          var layers = arrayUtils.map(evt.layers, function(result) {
+            return { featureLayer: result.layer };
+          });
+          var settings = {
+            map: map,
+            templatePicker: templatePicker,
+            layerInfos: layers,
+            toolbarVisible: false,
+            createOptions: {
+              polylineDrawTools:[ Editor.CREATE_TOOL_FREEHAND_POLYLINE ],
+              polygonDrawTools: [ Editor.CREATE_TOOL_FREEHAND_POLYGON,
+                Editor.CREATE_TOOL_CIRCLE,
+                Editor.CREATE_TOOL_TRIANGLE,
+                Editor.CREATE_TOOL_RECTANGLE
+              ]
+            },
+            toolbarOptions: {
+              reshapeVisible: false
+            }
+          };
+          var params = { settings: settings };
+          myEditor = new Editor(params, 'editorDiv');
+          myEditor.startup();
+		  
+		  //zet standaardwaarden op de verborgen velden gebaseerd op de initalisatie
+		  layer.templates[0].prototype.attributes.NAAMTOEVOEGER = username;
+		  layer.templates[0].prototype.attributes.NAAM = leesteken;
+		  myEditor.attributeInspector.layerInfos[0].hideFields.push( "NAAM");
+		  myEditor.attributeInspector.layerInfos[0].hideFields.push( "NAAMTOEVOEGER");
+		  attInspector = myEditor.attributeInspector;
+		  
+		  
+		   //add a ready button next to the delete button
+          var readyButton = new Button({ label: "Gereed", "class": "saveButton"},domConstruct.create("div"));
+          domConstruct.place(readyButton.domNode, attInspector.deleteBtn.domNode, "before");
+          readyButton.on("click", function() {
+		   map.infoWindow.hide();
+		   myEditor.editToolbar.deactivate();
+          });
+		  map.infoWindow.resize(350,475);
+        }
+      });
+	  }
+	  init("Bargeres","joel", "Point");
+    </script>
+  </head>
+  <body class="claro">
+    <div id="main" >
+      <div data-dojo-type="dijit/layout/ContentPane" id="map" data-dojo-props="region:'center'">
+	    <div id="LocateButton"></div>
+		<div id="templateDiv" ></div>
+		</div>
+		<div style="position:absolute; right:15px; top:130px; z-Index:999;">
+        <div data-dojo-type="dijit/TitlePane" 
+             data-dojo-props="title:'Achtergrondkaart', closable:false, open:false">
+          <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:120px; overflow:auto;">
+            <div id="basemapGallery"></div>
+          </div>
+        </div>
+      </div>
+	  <div id="editorDiv" style="display:none;"></div>
+    </div>
+  </body>
+</html>
