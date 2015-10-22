@@ -229,6 +229,7 @@
 		  //zet standaardwaarden op de verborgen velden gebaseerd op de initalisatie
 		  editLayer.templates[0].prototype.attributes.NAAMTOEVOEGER = username;
 		  editLayer.templates[0].prototype.attributes.NAAM = leesteken;
+		  editLayer.templates[0].prototype.attributes.TIJDSTIP = Date.now();
 		  myEditor.attributeInspector.layerInfos[0].hideFields.push( "NAAM");
 		  myEditor.attributeInspector.layerInfos[0].hideFields.push( "NAAMTOEVOEGER");
 		  attInspector = myEditor.attributeInspector;
