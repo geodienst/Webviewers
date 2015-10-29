@@ -67,12 +67,15 @@
     
     <script src="http://js.arcgis.com/3.14/"></script>
     <script>
+		//deze token werkt alleen lokaal bij mij
+	  var tokenJoel = "M8CTeluFKPRDCAErnu7OoFIJOQs4ilOCQgF_-9j6VHAq15qqEJ6GTpt1a2VTEVoHKvwLJOkzY5UOr2GsjmLMNS9Om-dd-cHtopRAMEkvUIs."; //http://localhost/rug/Leestekens/LeestekensEdit.html
+	  //vervang deze door je eigen token, of implementeer een mechanisme om tokens op te halen
       var map;
 	  var myEditor;
 	  var editLayer;
 	  var viewLayer;
 	  var basemapGallery;
-      function init(leesteken, username, editType){
+      function init(leesteken, username, editType, token){
       require([
         "esri/map", 
         "esri/tasks/GeometryService",
@@ -80,6 +83,8 @@
         "esri/layers/ArcGISTiledMapServiceLayer",
         "esri/layers/FeatureLayer",
 		"esri/layers/ArcGISDynamicMapServiceLayer",
+		
+		"esri/request",
 
         "esri/Color",
         "esri/symbols/SimpleMarkerSymbol",
@@ -104,13 +109,15 @@
       ], function(
         Map, GeometryService,
         ArcGISTiledMapServiceLayer, FeatureLayer, ArcGISDynamicMapServiceLayer,
+		esriRequest,
         Color, SimpleMarkerSymbol, SimpleLineSymbol, 
 		BasemapLayer, Basemap,BasemapGallery,
         Editor, TemplatePicker, Button,LocateButton,
         esriConfig, jsapiBundle,
         arrayUtils, parser, keys,domConstruct
       ) {
-        parser.parse();       
+        parser.parse();
+		
 
         esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
         
@@ -134,7 +141,7 @@
 		});
 		
 		var baselayerOpenTopo = new BasemapLayer({url:"http://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Open_Topo/MapServer"});
-		var basemapOpenTopo = new Basemap({layers:[baselayerOpenTopo],title:"Kaart",thumbnailUrl:"images/opentopo2.png"});
+		var basemapOpenTopo = new Basemap({layers:[baselayerOpenTopo],title:"Kaart",thumbnailUrl:"images/opentopo.png"});
 		basemapGallery.add(basemapOpenTopo);
 		var layerOpenTopo = new ArcGISTiledMapServiceLayer("http://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Open_Topo/MapServer");
 		map.addLayer(layerOpenTopo);
@@ -144,7 +151,7 @@
 		basemapGallery.add(basemapLufo);
 		
 		var baselayerBonne = new BasemapLayer({url:"https://geo.rug.nl/arcgis/rest/services/HistorischeKaarten/Bonnebladen/ImageServer"});
-		var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/bonnebladen"});
+		var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/bonnebladen.png"});
 		basemapGallery.add(basemapBonne);
 		
 		
@@ -153,7 +160,7 @@
         viewLayer = new ArcGISDynamicMapServiceLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/MapServer");
 		var layerDefinitions= []
 		if (editType ==="Polygon"){
-			editLayer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/2", {
+			editLayer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschap_edit/FeatureServer/2?token="+token, {
 			  mode: FeatureLayer.MODE_ONDEMAND, 
 			  outFields: ['*']
 			});
@@ -161,7 +168,7 @@
 			layerDefinitions[2] = definitionQueryViewLayer;
 		}
 		else if(editType ==="Line"){
-			editLayer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/1", {
+			editLayer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschap_edit/FeatureServer/1?token="+token, {
 			  mode: FeatureLayer.MODE_ONDEMAND, 
 			  outFields: ['*']
 			});
@@ -169,7 +176,7 @@
 			layerDefinitions[1] = definitionQueryViewLayer;
 		}
 		else if(editType==="Point"){
-			editLayer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/FeatureServer/0", {
+			editLayer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschap_edit/FeatureServer/0?token="+token, {
 			  mode: FeatureLayer.MODE_ONDEMAND, 
 			  outFields: ['*']
 			});
@@ -194,7 +201,7 @@
 		  for (var i = 0; i< evt.layers.length;i++){
 		   	if (evt.layers[i].layer.declaredClass ==="esri.layers.FeatureLayer"){templateLayers.push(evt.layers[i].layer);}
 		  } 
-		  map.setExtent(layerPDOK.fullExtent)
+		  map.setExtent(layerOpenTopo.fullExtent)
           var templatePicker = new TemplatePicker({
             featureLayers: templateLayers,
             rows: "auto",
@@ -246,7 +253,7 @@
         }
       });
 	  }
-	  init("Bargeres","mark", "Point");
+	  init("Bargeres","mark", "Point", tokenJoel);
     </script>
   </head>
   <body class="claro">
