@@ -274,7 +274,7 @@ Highcharts.setOptions(Highcharts.theme);
 		map.setExtent(l.layer.fullExtent);
 		var query = new Query();
 		  query.where = "LOCATIONCODE = 'ut002'";
-          query.outFields = [ "*" ];
+         query.outFields = [ "DATUMTIJD,DESCRIPTION,RENTALBIKES" ];
 		  query.orderByFields = ["DATUMTIJD  DESC"];
 		  query.returnGeometry = false;
           // Query for the features with the given object ID
@@ -296,7 +296,7 @@ Highcharts.setOptions(Highcharts.theme);
           
 		  var query = new Query();
 		  query.where = "LOCATIONCODE = '" + evt.graphic.attributes.LOCATIONCODE +"'";
-          query.outFields = [ "*" ];
+          query.outFields = [ "DATUMTIJD,DESCRIPTION,RENTALBIKES" ];
 		  query.orderByFields = ["DATUMTIJD  DESC"];
 		  query.returnGeometry = false;
           // Query for the features with the given object ID
@@ -313,7 +313,7 @@ Highcharts.setOptions(Highcharts.theme);
 	function createchart(featureSet){
 		var data = [];
 		for (var i = featureSet.features.length-1; i>=0; i--){
-			data.push([featureSet.features[i].attributes.DATUMTIJD,featureSet.features[i].attributes.RENTALBIKES ]);
+			data.push([featureSet.features[i].attributes.DATUMTIJD+3600000,featureSet.features[i].attributes.RENTALBIKES ]);
 		}
 		var loc = featureSet.features[0].attributes.DESCRIPTION;
 		$('#chart').highcharts({
