@@ -279,7 +279,7 @@ Highcharts.setOptions(Highcharts.theme);
       document.getElementsByClassName('logo-med')[0].style.backgroundImage="url(\"http://geodienst.webhosting.rug.nl/img/odp/geodienst_color3_70.png\")"; 
       document.getElementsByClassName('logo-med')[0].style.backgroundRepeat="no-repeat";  
 
-    layer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/VerkeerInfra/ovfiets/FeatureServer/0",{
+    layer = new FeatureLayer("https://geo.rug.nl/arcgis/rest/services/VerkeerInfra/ovfiets_read/FeatureServer/0",{
     outFields: ["*"]}
     );
     layer.on("load", function(l){
