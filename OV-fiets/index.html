@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+  <link rel='shortcut icon' type='image/x-icon' href='http://geodienst.webhosting.rug.nl/img/odp/favicon.ico'/>
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>OV-fiets geschiedenis</title>
@@ -10,25 +11,30 @@
       padding:0;
       margin:0;
       height:100%;
-	  
+    
     }
-	#map	{
-	position: absolute;
-	  left:0px;
-	  right:0px;
-	  top:0px;
-	  bottom:200px;
-	  }
-	  #chart{
-		position: absolute;
-		left:0px;
-		right:0px;
-		bottom:0px;
-		height: 200px;
-		background-color:#2a2a2b;
-	  }
-	  
-	  
+    #map  {
+    position: absolute;
+    left:0px;
+    right:0px;
+    top:0px;
+    bottom:200px;
+    }
+
+    #map .logo-med {
+      width: 70px;
+      height: 70px;
+    }
+
+    #chart{
+    position: absolute;
+    left:0px;
+    right:0px;
+    bottom:0px;
+    height: 200px;
+    background-color:#2a2a2b;
+    }
+        
   </style>
   <script src="//js.arcgis.com/3.14/"></script>
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -254,9 +260,9 @@ Highcharts.setOptions(Highcharts.theme);
   
     require([
       "esri/map", 
-	  "esri/layers/FeatureLayer", 
-	   "esri/tasks/query",
-	   "esri/TimeExtent",
+    "esri/layers/FeatureLayer", 
+     "esri/tasks/query",
+     "esri/TimeExtent",
       "dojo/domReady!"
     ], function(
       Map, FeatureLayer,Query,TimeExtent
@@ -267,56 +273,62 @@ Highcharts.setOptions(Highcharts.theme);
         zoom: 3,
         basemap: "dark-gray"
       });
-	  layer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/VerkeerInfra/ovfiets/FeatureServer/0",{
-		outFields: ["*"]}
-	  );
-	  layer.on("load", function(l){
-		map.setExtent(l.layer.fullExtent);
-		var query = new Query();
-		  query.where = "LOCATIONCODE = 'ut002'";
-         query.outFields = [ "DATUMTIJD,DESCRIPTION,RENTALBIKES" ];
-		  query.orderByFields = ["DATUMTIJD  DESC"];
-		  query.returnGeometry = false;
-          // Query for the features with the given object ID
-          layer.queryFeatures(query, function(featureSet) {
-			var t = featureSet;
-			createchart(featureSet);
-		  });
-	  });
-	  var startdate = new Date();
-	  startdate.setMinutes(startdate.getMinutes() - 5);	
-	  var timeExtent = new TimeExtent();
-	  timeExtent.startTime = startdate;
-	  map.setTimeExtent(timeExtent);
-	
-	  map.addLayer(layer);
 
-	  
-	  layer.on("click", function(evt){          
-          
-		  var query = new Query();
-		  query.where = "LOCATIONCODE = '" + evt.graphic.attributes.LOCATIONCODE +"'";
-          query.outFields = [ "DATUMTIJD,DESCRIPTION,RENTALBIKES" ];
-		  query.orderByFields = ["DATUMTIJD  DESC"];
-		  query.returnGeometry = false;
+      //add custom logo instead of esri
+      esri.config.defaults.map.logoLink = "http://rug.nl/geo"      
+      document.getElementsByClassName('logo-med')[0].style.backgroundImage="url(\"http://geodienst.webhosting.rug.nl/img/odp/geodienst_color3_70.png\")"; 
+      document.getElementsByClassName('logo-med')[0].style.backgroundRepeat="no-repeat";  
+
+    layer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/VerkeerInfra/ovfiets/FeatureServer/0",{
+    outFields: ["*"]}
+    );
+    layer.on("load", function(l){
+    map.setExtent(l.layer.fullExtent);
+    var query = new Query();
+      query.where = "LOCATIONCODE = 'ut002'";
+         query.outFields = [ "DATUMTIJD,DESCRIPTION,RENTALBIKES" ];
+      query.orderByFields = ["DATUMTIJD  DESC"];
+      query.returnGeometry = false;
           // Query for the features with the given object ID
           layer.queryFeatures(query, function(featureSet) {
-			var t = featureSet;
-			createchart(featureSet);
-		  });
+      var t = featureSet;
+      createchart(featureSet);
+      });
+    });
+    var startdate = new Date();
+    startdate.setMinutes(startdate.getMinutes() - 5); 
+    var timeExtent = new TimeExtent();
+    timeExtent.startTime = startdate;
+    map.setTimeExtent(timeExtent);
+  
+    map.addLayer(layer);
+
+    
+    layer.on("click", function(evt){          
+          
+      var query = new Query();
+      query.where = "LOCATIONCODE = '" + evt.graphic.attributes.LOCATIONCODE +"'";
+          query.outFields = [ "DATUMTIJD,DESCRIPTION,RENTALBIKES" ];
+      query.orderByFields = ["DATUMTIJD  DESC"];
+      query.returnGeometry = false;
+          // Query for the features with the given object ID
+          layer.queryFeatures(query, function(featureSet) {
+      var t = featureSet;
+      createchart(featureSet);
+      });
         });
-	  
-	  
-	  
+    
+    
+    
 
     });
-	function createchart(featureSet){
-		var data = [];
-		for (var i = featureSet.features.length-1; i>=0; i--){
-			data.push([featureSet.features[i].attributes.DATUMTIJD+3600000,featureSet.features[i].attributes.RENTALBIKES ]);
-		}
-		var loc = featureSet.features[0].attributes.DESCRIPTION;
-		$('#chart').highcharts({
+  function createchart(featureSet){
+    var data = [];
+    for (var i = featureSet.features.length-1; i>=0; i--){
+      data.push([featureSet.features[i].attributes.DATUMTIJD+3600000,featureSet.features[i].attributes.RENTALBIKES ]);
+    }
+    var loc = featureSet.features[0].attributes.DESCRIPTION;
+    $('#chart').highcharts({
             chart: {
                 zoomType: 'x'
             },
@@ -325,13 +337,13 @@ Highcharts.setOptions(Highcharts.theme);
             },
             subtitle: {
                 text: document.ontouchstart === undefined ?
-                        'Klik en sleep in de grafiek om in te zoomen' : 'Pinch the chart to zoom in'
+                        'Klik en sleep in de grafiek om in te zoomen' : 'Zoom in op de grafiek met twee vingers'
             },
             xAxis: {
                 type: 'datetime'
             },
             yAxis: {
-				min: 0,
+        min: 0,
                 title: {
                     text: 'Aantal fietsen'
                 }
@@ -372,7 +384,7 @@ Highcharts.setOptions(Highcharts.theme);
                 data: data
             }]
         });
-	}
+  }
   </script>
 </head>
 <body>
@@ -380,12 +392,6 @@ Highcharts.setOptions(Highcharts.theme);
     
   </div>
   <div id="chart">
-  </div>
-
-  <div>
-    <div id ="logo">
-      <a href= "http://rug.nl/geo"<img src="http://geodienst.webhosting.rug.nl/img/odp/geodienst_color95.png"></a>
-    </div>  
   </div>
 
 </body>
