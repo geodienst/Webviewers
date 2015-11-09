@@ -97,6 +97,8 @@
 			var baselayerBonne = new BasemapLayer({url:"https://geo.rug.nl/arcgis/rest/services/HistorischeKaarten/Bonnebladen/ImageServer"});
 			var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/bonnebladen.png"});
 			basemapGallery.add(basemapBonne);
+			
+			map.infoWindow.resize(350,475);
 			});
 		
 			 
