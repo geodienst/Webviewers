@@ -40,7 +40,7 @@
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script>
-    var map, graphic, layer; 
+    var map, graphic, layer, lastLocation; 
   
   /**
  * Dark theme for Highcharts JS
@@ -267,6 +267,19 @@ Highcharts.setOptions(Highcharts.theme);
     ], function(
       Map, FeatureLayer,Query,TimeExtent
     )  {
+      lastLocation = 'ut002';
+      var queryChartData = function(){
+		var query = new Query();
+		  query.where = "LOCATIONCODE = '" + lastLocation +"'";
+			  query.outFields = [ "DATUMTIJD,DESCRIPTION,RENTALBIKES" ];
+		  query.orderByFields = ["DATUMTIJD  DESC"];
+		  query.returnGeometry = false;
+			  // Query for the features with the given object ID
+			  layer.queryFeatures(query, function(featureSet) {
+		  var t = featureSet;
+		  createchart(featureSet);
+		});
+	  }
 
       map = new Map("map", {
         center: [-56.049, 38.485],
@@ -283,17 +296,10 @@ Highcharts.setOptions(Highcharts.theme);
     outFields: ["*"]}
     );
     layer.on("load", function(l){
+    layer.setRefreshInterval(5);
+	window.setInterval(queryChartData, 300000);
+    queryChartData();
     map.setExtent(l.layer.fullExtent);
-    var query = new Query();
-      query.where = "LOCATIONCODE = 'ut002'";
-         query.outFields = [ "DATUMTIJD,DESCRIPTION,RENTALBIKES" ];
-      query.orderByFields = ["DATUMTIJD  DESC"];
-      query.returnGeometry = false;
-          // Query for the features with the given object ID
-          layer.queryFeatures(query, function(featureSet) {
-      var t = featureSet;
-      createchart(featureSet);
-      });
     });
     var startdate = new Date();
     startdate.setMinutes(startdate.getMinutes() - 5); 
@@ -305,17 +311,8 @@ Highcharts.setOptions(Highcharts.theme);
 
     
     layer.on("click", function(evt){          
-          
-      var query = new Query();
-      query.where = "LOCATIONCODE = '" + evt.graphic.attributes.LOCATIONCODE +"'";
-          query.outFields = [ "DATUMTIJD,DESCRIPTION,RENTALBIKES" ];
-      query.orderByFields = ["DATUMTIJD  DESC"];
-      query.returnGeometry = false;
-          // Query for the features with the given object ID
-          layer.queryFeatures(query, function(featureSet) {
-      var t = featureSet;
-      createchart(featureSet);
-      });
+       lastLocation = evt.graphic.attributes.LOCATIONCODE;
+      queryChartData();
         });
     
     
