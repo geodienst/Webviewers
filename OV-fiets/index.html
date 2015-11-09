@@ -333,7 +333,7 @@ Highcharts.setOptions(Highcharts.theme);
                 zoomType: 'x'
             },
             title: {
-                text: 'Aantal beschikbare fietsen op locatie '+ loc
+                text: 'Aantal beschikbare fietsen op locatie '+ loc + ': '+ featureSet.features[0].attributes.RENTALBIKES 
             },
             subtitle: {
                 text: document.ontouchstart === undefined ?
