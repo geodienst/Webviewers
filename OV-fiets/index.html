@@ -276,8 +276,11 @@ Highcharts.setOptions(Highcharts.theme);
 
       //add custom logo instead of esri
       esri.config.defaults.map.logoLink = "http://www.rug.nl/society-business/centre-for-information-technology/research/services/gis/blog/blog-19-11-2015-live-ov-fiets-kaart"      
-      document.getElementsByClassName('logo-med')[0].style.backgroundImage="url(\"http://geodienst.webhosting.rug.nl/img/odp/geodienst_color3_70.png\")"; 
+      try{
+      document.getElementsByClassName('logo-med')[0].style.backgroundImage="url('http://geodienst.webhosting.rug.nl/img/odp/geodienst_color3_70.png')"; 
       document.getElementsByClassName('logo-med')[0].style.backgroundRepeat="no-repeat";  
+	  }
+	  catch(jammerdan){}
 
     layer = new FeatureLayer("https://geo.rug.nl/arcgis/rest/services/VerkeerInfra/ovfiets_read/FeatureServer/0",{
     outFields: ["*"]}
