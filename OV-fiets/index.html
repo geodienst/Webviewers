@@ -22,9 +22,16 @@
     }
 
     #map .logo-med {
-      width: 70px;
-      height: 70px;
+    width: 70px;
+    height: 70px;
     }
+
+    #map .logo-sm {  
+    background-image: url('http://geodienst.webhosting.rug.nl/img/odp/supersmallesrigeologo.png') !important;  
+    height: 19px;  
+    width: 22px;
+    background-repeat: no-repeat;
+    }  
 
     #chart{
     position: absolute;
@@ -279,6 +286,8 @@ Highcharts.setOptions(Highcharts.theme);
       try{
       document.getElementsByClassName('logo-med')[0].style.backgroundImage="url('http://geodienst.webhosting.rug.nl/img/odp/geodienst_color3_70.png')"; 
       document.getElementsByClassName('logo-med')[0].style.backgroundRepeat="no-repeat";  
+      document.getElementsByClassName('logo-sm')[0].style.backgroundImage="url('http://geodienst.webhosting.rug.nl/img/odp/supersmallesrigeologo.png')"; 
+      document.getElementsByClassName('logo-sm')[0].style.backgroundRepeat="no-repeat";  
 	  }
 	  catch(jammerdan){}
 
