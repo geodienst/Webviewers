@@ -9,6 +9,7 @@
       <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/dojo/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
   <style>
+    @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Roboto+Slab:400,700);
     html,body,#container,#mapDiv{
       padding:0;
       margin:0;
@@ -17,6 +18,9 @@
 		right: 0px;
 		top:0px;
 		bottom: 0px;
+		color: #333333;
+        font-family: 'Open Sans', sans-serif;
+        font-size:14px;
     }
 	 #LocateButton {
       position: absolute;
@@ -24,7 +28,27 @@
       left: 20px;
       z-index: 50;
     }
-       
+	h1, h2, h3, h4, h5 {
+        font-weight:700;
+        color:#1e8066;
+        font-family: 'Roboto Slab', sans-serif;
+	}
+ 
+	h3 {
+        font-size:15px;
+        line-height:15px;
+	}
+	h4 {
+        font-size:13px;
+        line-height:13px;      
+	}
+	h2 {
+        font-size:18px;
+        line-height:18px;
+	}
+	.esriPopup {
+    font-family: 'Open Sans', sans-serif;;
+}
   </style>
 
   <script>var dojoConfig = {
@@ -98,7 +122,8 @@
 			var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/bonnebladen.png"});
 			basemapGallery.add(basemapBonne);
 			});
-		
+			
+			map.infoWindow.resize(350,475);
 			 
 		});
 	}
