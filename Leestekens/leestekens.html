@@ -9,46 +9,47 @@
       <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/dojo/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
   <style>
-    @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Roboto+Slab:400,700);
     html,body,#container,#mapDiv{
-      padding:0;
-      margin:0;
-      position: absolute;
-        left: 0px;
-		right: 0px;
-		top:0px;
-		bottom: 0px;
-		color: #333333;
-        font-family: 'Open Sans', sans-serif;
-        font-size:14px;
+    padding:0;
+    margin:0;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top:0px;
+    bottom: 0px;
+    color: #333333;
+    font-family: 'Open Sans', sans-serif;
+    font-size:14px;
     }
-	 #LocateButton {
+   #LocateButton {
       position: absolute;
       top: 95px;
       left: 20px;
       z-index: 50;
     }
-	h1, h2, h3, h4, h5 {
+    @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Roboto+Slab:400,700);
+    
+      h1, h2, h3, h4, h5 {
         font-weight:700;
         color:#1e8066;
         font-family: 'Roboto Slab', sans-serif;
-	}
+  }
  
-	h3 {
+  h3 {
         font-size:15px;
         line-height:15px;
-	}
-	h4 {
+  }
+  h4 {
         font-size:13px;
         line-height:13px;      
-	}
-	h2 {
+  }
+  h2 {
         font-size:18px;
         line-height:18px;
-	}
-	.esriPopup {
-    font-family: 'Open Sans', sans-serif;;
-}
+  }
+  .esriPopup {
+      font-family: 'Open Sans', sans-serif;;
+  }
 .claro .dijitTitlePaneTitleOpen, .claro .dijitTitlePaneTitleFixedOpen {
     color: #fff;
     padding: 12px 15px;
@@ -114,6 +115,7 @@ img.esriBasemapGalleryThumbnail {
 .dojoxGrid .dojoxGridCell {
     padding: 3px 7px 3px 7px;
 }
+  
   </style>
 
   <script>var dojoConfig = {
@@ -121,80 +123,76 @@ img.esriBasemapGalleryThumbnail {
     parseOnLoad: true};</script>
   <script src="http://js.arcgis.com/3.14compact/"></script>
   <script>
-	var map
-	function init(leesteken){
-		
-		webmapId = "8f29d2de779844d4b4008e51be8a2405";
-		var leesteken =leesteken;
-
-		require([
-		  "esri/map",
-		  "esri/tasks/GeometryService",
-		  "esri/arcgis/utils",
-		  "esri/dijit/Geocoder",
-		  "dijit/form/Button",
-		  "esri/dijit/LocateButton",
-		  
+  var map
+  function init(leesteken){
+    
+    webmapId = "8f29d2de779844d4b4008e51be8a2405";
+    var leesteken =leesteken;
+    require([
+      "esri/map",
+      "esri/tasks/GeometryService",
+      "esri/arcgis/utils",
+      "esri/dijit/Geocoder",
+      "dijit/form/Button",
+      "esri/dijit/LocateButton",
+      
           "esri/dijit/BasemapLayer", 
-		  "esri/dijit/Basemap",
-		  "esri/dijit/BasemapGallery",
-		  
-	      "esri/tasks/locator", "esri/graphic", "esri/lang","esri/geometry/Extent",
-		  "esri/geometry/webMercatorUtils",
-		  "dojo/domReady!"
-		], function (Map, GeometryService,arcgisUtils, Geocoder,Button,LocateButton,
-		    BasemapLayer, Basemap,BasemapGallery,
-			Locator, Graphic,esriLang, Extent,
-		    webMercatorUtils) {
-			arcgisUtils.createMap(webmapId, "mapDiv", {
-				mapOptions: {               
-					minZoom: 3
-				},
-				geometryServiceURL: "http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer"
-		}).then(function (response){
-			esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
-			map = response.map;
-			for (var i = 0; i< map.graphicsLayerIds.length; i++){
-				var layer = map.getLayer(map.graphicsLayerIds[i]);
-				layer.setDefinitionExpression("NAAM  = '"+leesteken+"'");
-			}
-			map.setExtent(map.extent);
-			
-			var geoLocate = new LocateButton({
-			  map: map,
-			  highlightLocation: false
-			  }, "LocateButton"
-			);
-			geoLocate.startup();
-			var basemapGallery = new BasemapGallery({
-				showArcGISBasemaps: false,
-				map: map
-			  }, "basemapGallery");
-			  basemapGallery.startup();
-			  
-			  basemapGallery.on("error", function(msg) {
-				console.log("basemap gallery error:  ", msg);
-			  });
-			  	var baselayerOpenTopo = new BasemapLayer({url:"http://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Open_Topo/MapServer"});
-			var basemapOpenTopo = new Basemap({layers:[baselayerOpenTopo],title:"Kaart",thumbnailUrl:"images/opentopo2.png"});
-			basemapGallery.add(basemapOpenTopo);
-			
-			var baselayerLufo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Luchtfoto/Luchtfoto/MapServer"});
-			var basemapLufo = new Basemap({layers:[baselayerLufo],title:"Luchtfoto",thumbnailUrl:"images/luchtfoto.png"});
-			basemapGallery.add(basemapLufo);
-			
-			var baselayerBonne = new BasemapLayer({url:"https://geo.rug.nl/arcgis/rest/services/HistorischeKaarten/Bonnebladen/ImageServer"});
-			var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/bonnebladen.png"});
-			basemapGallery.add(basemapBonne);
-			
-			map.infoWindow.resize(350,475);
-			});
-			
-			map.infoWindow.resize(350,475);
-			 
-		});
-	}
-	init("Bargeres");
+      "esri/dijit/Basemap",
+      "esri/dijit/BasemapGallery",
+      
+        "esri/tasks/locator", "esri/graphic", "esri/lang","esri/geometry/Extent",
+      "esri/geometry/webMercatorUtils",
+      "dojo/domReady!"
+    ], function (Map, GeometryService,arcgisUtils, Geocoder,Button,LocateButton,
+        BasemapLayer, Basemap,BasemapGallery,
+      Locator, Graphic,esriLang, Extent,
+        webMercatorUtils) {
+      arcgisUtils.createMap(webmapId, "mapDiv", {
+        mapOptions: {               
+          minZoom: 3
+        },
+        geometryServiceURL: "http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer"
+    }).then(function (response){
+      esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+      map = response.map;
+      for (var i = 0; i< map.graphicsLayerIds.length; i++){
+        var layer = map.getLayer(map.graphicsLayerIds[i]);
+        layer.setDefinitionExpression("NAAM  = '"+leesteken+"'");
+      }
+      map.setExtent(map.extent);
+      
+      var geoLocate = new LocateButton({
+        map: map,
+        highlightLocation: false
+        }, "LocateButton"
+      );
+      geoLocate.startup();
+      var basemapGallery = new BasemapGallery({
+        showArcGISBasemaps: false,
+        map: map
+        }, "basemapGallery");
+        basemapGallery.startup();
+        
+        basemapGallery.on("error", function(msg) {
+        console.log("basemap gallery error:  ", msg);
+        });
+          var baselayerOpenTopo = new BasemapLayer({url:"http://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Open_Topo/MapServer"});
+      var basemapOpenTopo = new Basemap({layers:[baselayerOpenTopo],title:"Kaart",thumbnailUrl:"images/opentopo2.png"});
+      basemapGallery.add(basemapOpenTopo);
+      
+      var baselayerLufo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Luchtfoto/Luchtfoto/MapServer"});
+      var basemapLufo = new Basemap({layers:[baselayerLufo],title:"Luchtfoto",thumbnailUrl:"images/luchtfoto.png"});
+      basemapGallery.add(basemapLufo);
+      
+      var baselayerBonne = new BasemapLayer({url:"https://geo.rug.nl/arcgis/rest/services/HistorischeKaarten/Bonnebladen/ImageServer"});
+      var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/bonnebladen.png"});
+      basemapGallery.add(basemapBonne);
+      });
+    
+       
+    });
+  }
+  init("Bargeres");
   </script>
   </head>
 
@@ -202,15 +200,15 @@ img.esriBasemapGalleryThumbnail {
       <div id="container">
           <div id="mapDiv" data-dojo-type="dijit/layout/ContentPane"
                data-dojo-props="region:'center'">
-			<div id="LocateButton"></div>
-			<div style="position:absolute; right:15px; top:15px; z-Index:999;">
-			<div data-dojo-type="dijit/TitlePane" 
-				 data-dojo-props="title:'Achtergrondkaart', closable:false, open:false">
-			  <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:120px; overflow:auto;">
-				<div id="basemapGallery"></div>
-			  </div>
-			</div>
-		  </div>
+      <div id="LocateButton"></div>
+      <div style="position:absolute; right:15px; top:15px; z-Index:999;">
+      <div data-dojo-type="dijit/TitlePane" 
+         data-dojo-props="title:'Achtergrondkaart', closable:false, open:false">
+        <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:120px; overflow:auto;">
+        <div id="basemapGallery"></div>
+        </div>
+      </div>
+      </div>
           </div>
                    
       </div>
