@@ -3,13 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <title>Edit Leestekens</title>
+    <title>Edit Leestekenss</title>
 
     <link rel="stylesheet" href="http://js.arcgis.com/3.14/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.14/esri/css/esri.css">
     <style>
-      html,body{height:100%;width:100%;margin:0;overflow:hidden;}
-	  
+      @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Roboto+Slab:400,700);
+      html,body{height:100%;width:100%;margin:0;overflow:hidden;font-family: 'Open Sans', sans-serif;}
       #map{
         padding:0;
       margin:0;
@@ -63,6 +63,93 @@
 
       .dj_ie .infowindow .window .top .right .user .content { position: relative; }
       .dj_ie .simpleInfoWindow .content { position: relative; }
+
+    h1, h2, h3, h4, h5 {
+        font-weight:700;
+        color:#1e8066;
+        font-family: 'Roboto Slab', sans-serif;
+	}
+ 
+	h3 {
+        font-size:15px;
+        line-height:15px;
+	}
+	h4 {
+        font-size:13px;
+        line-height:13px;      
+	}
+	h2 {
+        font-size:18px;
+        line-height:18px;
+	}
+	.esriPopup {
+    font-family: 'Open Sans', sans-serif;;
+}
+.claro .dijitTitlePaneTitleOpen, .claro .dijitTitlePaneTitleFixedOpen {
+    color: #fff;
+    padding: 12px 15px;
+    min-height: 17px;
+    font-size: 16px;
+    font-family: "Roboto Slab",sans-serif;
+    font-weight: 700;
+    background-color: #1e8066;
+    border-color: #cbcbcb;
+    background-image: none;
+    border-top-right-radius:4px;
+    border-top-left-radius:4px;
+}
+
+.claro .dijitTitlePaneTitle {
+    padding: 12px 15px;
+    min-height: 17px;
+    font-size: 16px;
+    font-family: "Roboto Slab",sans-serif;
+    font-weight: 700;
+    color: #fff;
+    background-color: #1e8066;
+    border: 1px solid #cecece;
+    background-image: none;
+    box-shadow: 0px 0px 3px rgba(0,0,0,0.1);
+    -o-box-shadow: 0px 0px 3px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 0px 0px 3px rgba(0,0,0,0.1);
+    -moz-box-shadow: 0px 0px 3px rgba(0,0,0,0.1);
+}
+.claro .dijitTitlePaneTitleClosed, .claro .dijitTitlePaneTitleFixedClosed {
+    color: #fff;
+    font-size: 16px;
+    padding: 12px 15px;
+    font-family: "Roboto Slab",sans-serif;
+    font-weight: 700;
+    background-color: #1e8066;
+    border: 1px solid #cecece;
+    background-image: none;
+    border-radius:4px;
+}
+.claro .dijitTitlePaneContentOuter {
+    background: #ffffff;
+    border: 1px solid #b5bcc7;
+    border-top: none;
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    border-bottom-left-radius:4px;
+    border-bottom-right-radius:4px;
+}
+.esriBasemapGalleryNode {
+    float: left;
+    width: 100px;
+    height: 100px;
+    margin: 15px 15px 0px 10px;
+}
+img.esriBasemapGalleryThumbnail {
+    box-shadow: none;
+    -o-box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    border-radius:4px;
+}
+.dojoxGrid .dojoxGridCell {
+    padding: 3px 7px 3px 7px;
+}
     </style>
     
     <script src="http://js.arcgis.com/3.14/"></script>
