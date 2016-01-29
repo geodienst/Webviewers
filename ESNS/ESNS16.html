@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+  <title>ESNS2016 Bands per Country | Geodienst</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+
+  <link rel="stylesheet" href="https://js.arcgis.com/3.15/esri/css/esri.css">
+  <style>
+    html,body,#mapDiv,.map.container{
+      padding:0;
+      margin:0;
+      height:100%;
+    }
+    #legendDiv{
+      background-color: #444444;
+      opacity: 0.7;
+      position: absolute !important;
+      z-index: 99;
+      bottom:8px;
+      left:8px;
+      border-radius:6px;
+    }
+    #legendDiv_EurosonicNoorderslag_9177{
+      font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      color:#eaeaea;
+    }
+    .map .logo-med {
+    width: 70px;
+    height: 70px;
+    background-repeat: no-repeat;
+    }
+   .map .logo-sm {  
+    background-image: url('http://geodienst.webhosting.rug.nl/img/odp/supersmallesrigeologo.png') !important;  
+    height: 19px;  
+    width: 22px;
+    background-repeat: no-repeat;
+    }  
+  </style>
+
+  <script>var dojoConfig = { parseOnLoad: true };</script>
+  <script src="https://js.arcgis.com/3.15compact/"></script>
+  <script>
+    var map,
+        webmapId = "25a22a824c5b4b599052340990385911";
+    
+    require([
+      "esri/map",
+      "esri/arcgis/utils",
+      "esri/dijit/Legend",
+      "dojo/domReady!"
+      ], function (Map, arcgisUtils, Legend) {
+        arcgisUtils.createMap(webmapId, "mapDiv").then(function (response) {
+        map = response.map;
+
+        var legend = new Legend({
+            map: map,
+            layerInfos:(arcgisUtils.getLegendLayers(response))
+        }, "legendDiv");
+        
+        legend.startup();
+        
+        esri.config.defaults.map.logoLink = "http://www.rug.nl/geo"
+      try{
+      document.getElementsByClassName('logo-med')[0].style.backgroundImage="url('http://geodienst.webhosting.rug.nl/img/odp/geodienst_color2_70.png')"; 
+      document.getElementsByClassName('logo-med')[0].style.backgroundRepeat="no-repeat";  
+      document.getElementsByClassName('logo-sm')[0].style.backgroundImage="url('http://geodienst.webhosting.rug.nl/img/odp/supersmallesrigeologo.png')"; 
+      document.getElementsByClassName('logo-sm')[0].style.backgroundRepeat="no-repeat";  
+    }
+    catch(jammerdan){}
+    });
+    
+    });
+  </script>
+
+  </head>
+
+  <body>
+    <div id="mapDiv"></div>
+    <div id="legendDiv"></div>
+    <div id="titleDiv"></div>
+  </body>
+  </html>
