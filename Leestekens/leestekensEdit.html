@@ -15,9 +15,9 @@
       margin:0;
       position: absolute;
         left: 0px;
-		right: 0px;
-		top:0px;
-		bottom: 0px;
+    right: 0px;
+    top:0px;
+    bottom: 0px;
       }
       #header{
         font-size: 1.1em;
@@ -26,40 +26,40 @@
         padding-top:4px;
         color:#660000;
       }
-	  .groupLabel{
-		display:none;
-	  }
-	  #templateDiv{
-		right:15px;
-		top:15px;
-		height:100px;
-		width:100px;
-		position: absolute;
-		overflow:hidden;
-		padding:2px;
-		z-index: 50;		
-		border-width:1px;
-		border-color:#000000;		
-		background-color: #FFFFFF;
-		-webkit-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		cursor: pointer;
-		-webkit-border-radius: 5px;
-		-moz-border-radius: 5px;
-		-o-border-radius: 5px;
-		border-radius: 5px;
-	  }
-	  #LocateButton {
+    .groupLabel{
+    display:none;
+    }
+    #templateDiv{
+    right:15px;
+    top:15px;
+    height:100px;
+    width:100px;
+    position: absolute;
+    overflow:hidden;
+    padding:2px;
+    z-index: 50;    
+    border-width:1px;
+    border-color:#000000;   
+    background-color: #FFFFFF;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    cursor: pointer;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
+    border-radius: 5px;
+    }
+    #LocateButton {
       position: absolute;
       top: 95px;
       left: 20px;
       z-index: 50;
     }
-	.saveButton{
-		float:right;
-		margin: 0em;
-	}
+  .saveButton{
+    float:right;
+    margin: 0em;
+  }
 
       .dj_ie .infowindow .window .top .right .user .content { position: relative; }
       .dj_ie .simpleInfoWindow .content { position: relative; }
@@ -68,21 +68,21 @@
         font-weight:700;
         color:#1e8066;
         font-family: 'Roboto Slab', sans-serif;
-	}
+  }
  
-	h3 {
+  h3 {
         font-size:15px;
         line-height:15px;
-	}
-	h4 {
+  }
+  h4 {
         font-size:13px;
         line-height:13px;      
-	}
-	h2 {
+  }
+  h2 {
         font-size:18px;
         line-height:18px;
-	}
-	.esriPopup {
+  }
+  .esriPopup {
     font-family: 'Open Sans', sans-serif;;
 }
 .claro .dijitTitlePaneTitleOpen, .claro .dijitTitlePaneTitleFixedOpen {
@@ -154,14 +154,14 @@ img.esriBasemapGalleryThumbnail {
     
     <script src="http://js.arcgis.com/3.14/"></script>
     <script>
-		//deze token werkt alleen lokaal bij mij
-	  var tokenJoel = "M8CTeluFKPRDCAErnu7OoFIJOQs4ilOCQgF_-9j6VHAq15qqEJ6GTpt1a2VTEVoHKvwLJOkzY5UOr2GsjmLMNS9Om-dd-cHtopRAMEkvUIs."; //http://localhost/rug/Leestekens/LeestekensEdit.html
-	  //vervang deze door je eigen token, of implementeer een mechanisme om tokens op te halen
+    //deze token werkt alleen lokaal bij mij
+    var tokenJoel = "M8CTeluFKPRDCAErnu7OoFIJOQs4ilOCQgF_-9j6VHAq15qqEJ6GTpt1a2VTEVoHKvwLJOkzY5UOr2GsjmLMNS9Om-dd-cHtopRAMEkvUIs."; //http://localhost/rug/Leestekens/LeestekensEdit.html
+    //vervang deze door je eigen token, of implementeer een mechanisme om tokens op te halen
       var map;
-	  var myEditor;
-	  var editLayer;
-	  var viewLayer;
-	  var basemapGallery;
+    var myEditor;
+    var editLayer;
+    var viewLayer;
+    var basemapGallery;
       function init(leesteken, username, editType, token){
       require([
         "esri/map", 
@@ -169,22 +169,22 @@ img.esriBasemapGalleryThumbnail {
 
         "esri/layers/ArcGISTiledMapServiceLayer",
         "esri/layers/FeatureLayer",
-		"esri/layers/ArcGISDynamicMapServiceLayer",
-		
-		"esri/request",
+    "esri/layers/ArcGISDynamicMapServiceLayer",
+    
+    "esri/request",
 
         "esri/Color",
         "esri/symbols/SimpleMarkerSymbol",
         "esri/symbols/SimpleLineSymbol",
-		
-		"esri/dijit/BasemapLayer", 
-		"esri/dijit/Basemap",
-		"esri/dijit/BasemapGallery",
+    
+    "esri/dijit/BasemapLayer", 
+    "esri/dijit/Basemap",
+    "esri/dijit/BasemapGallery",
 
         "esri/dijit/editing/Editor",
         "esri/dijit/editing/TemplatePicker",
-		"dijit/form/Button",
-		"esri/dijit/LocateButton",
+    "dijit/form/Button",
+    "esri/dijit/LocateButton",
 
         "esri/config",
         "dojo/i18n!esri/nls/jsapi",
@@ -196,15 +196,15 @@ img.esriBasemapGalleryThumbnail {
       ], function(
         Map, GeometryService,
         ArcGISTiledMapServiceLayer, FeatureLayer, ArcGISDynamicMapServiceLayer,
-		esriRequest,
+    esriRequest,
         Color, SimpleMarkerSymbol, SimpleLineSymbol, 
-		BasemapLayer, Basemap,BasemapGallery,
+    BasemapLayer, Basemap,BasemapGallery,
         Editor, TemplatePicker, Button,LocateButton,
         esriConfig, jsapiBundle,
         arrayUtils, parser, keys,domConstruct
       ) {
         parser.parse();
-		
+    
 
         esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
         
@@ -212,83 +212,83 @@ img.esriBasemapGalleryThumbnail {
           center: [5.314334,52.038308],
           zoom: 8,
           slider: true
-		  
+      
         });
 
         map.on("layers-add-result", initEditor);
         //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
-		 basemapGallery = new BasemapGallery({
-			showArcGISBasemaps: false,
-			map: map
-			}, "basemapGallery");
-		basemapGallery.startup();
+     basemapGallery = new BasemapGallery({
+      showArcGISBasemaps: false,
+      map: map
+      }, "basemapGallery");
+    basemapGallery.startup();
 
-		basemapGallery.on("error", function(msg) {
-			console.log("basemap gallery error:  ", msg);
-		});
-		
-		var baselayerOpenTopo = new BasemapLayer({url:"http://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Open_Topo/MapServer"});
-		var basemapOpenTopo = new Basemap({layers:[baselayerOpenTopo],title:"Kaart",thumbnailUrl:"images/opentopo.png"});
-		basemapGallery.add(basemapOpenTopo);
-		var layerOpenTopo = new ArcGISTiledMapServiceLayer("http://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Open_Topo/MapServer");
-		map.addLayer(layerOpenTopo);
-		
-		var baselayerLufo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Luchtfoto/Luchtfoto/MapServer"});
-		var basemapLufo = new Basemap({layers:[baselayerLufo],title:"Luchtfoto",thumbnailUrl:"images/luchtfoto.png"});
-		basemapGallery.add(basemapLufo);
-		
-		var baselayerBonne = new BasemapLayer({url:"https://geo.rug.nl/arcgis/rest/services/HistorischeKaarten/Bonnebladen/ImageServer"});
-		var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/bonnebladen.png"});
-		basemapGallery.add(basemapBonne);
-		
-		
-		var definitionQueryEditLayer = "NAAM  = '"+leesteken+"' AND NAAMTOEVOEGER ='"+username+"'";
-		var definitionQueryViewLayer = "NAAM  = '"+leesteken+"' AND NAAMTOEVOEGER <>'"+username+"'";
-        viewLayer = new ArcGISDynamicMapServiceLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschaptest_nieuw/MapServer");
-		var layerDefinitions= []
-		if (editType ==="Polygon"){
-			editLayer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschap_edit/FeatureServer/2?token="+token, {
-			  mode: FeatureLayer.MODE_ONDEMAND, 
-			  outFields: ['*']
-			});
-			viewLayer.setVisibleLayers([2]);
-			layerDefinitions[2] = definitionQueryViewLayer;
-		}
-		else if(editType ==="Line"){
-			editLayer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschap_edit/FeatureServer/1?token="+token, {
-			  mode: FeatureLayer.MODE_ONDEMAND, 
-			  outFields: ['*']
-			});
-			viewLayer.setVisibleLayers([1]);
-			layerDefinitions[1] = definitionQueryViewLayer;
-		}
-		else if(editType==="Point"){
-			editLayer = new FeatureLayer("https://geo-test.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschap_edit/FeatureServer/0?token="+token, {
-			  mode: FeatureLayer.MODE_ONDEMAND, 
-			  outFields: ['*']
-			});
-			viewLayer.setVisibleLayers([0]);
-			layerDefinitions[0] = definitionQueryViewLayer;
-		}
+    basemapGallery.on("error", function(msg) {
+      console.log("basemap gallery error:  ", msg);
+    });
+    
+    var baselayerOpenTopo = new BasemapLayer({url:"http://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Open_Topo/MapServer"});
+    var basemapOpenTopo = new Basemap({layers:[baselayerOpenTopo],title:"Kaart",thumbnailUrl:"images/opentopo.png"});
+    basemapGallery.add(basemapOpenTopo);
+    var layerOpenTopo = new ArcGISTiledMapServiceLayer("http://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Open_Topo/MapServer");
+    map.addLayer(layerOpenTopo);
+    
+    var baselayerLufo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Luchtfoto/Luchtfoto/MapServer"});
+    var basemapLufo = new Basemap({layers:[baselayerLufo],title:"Luchtfoto",thumbnailUrl:"images/luchtfoto.png"});
+    basemapGallery.add(basemapLufo);
+    
+    var baselayerBonne = new BasemapLayer({url:"https://geo.rug.nl/arcgis/rest/services/HistorischeKaarten/Bonnebladen/ImageServer"});
+    var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/bonnebladen.png"});
+    basemapGallery.add(basemapBonne);
+    
+    
+    var definitionQueryEditLayer = "NAAM  = '"+leesteken+"' AND NAAMTOEVOEGER ='"+username+"'";
+    var definitionQueryViewLayer = "NAAM  = '"+leesteken+"' AND NAAMTOEVOEGER <>'"+username+"'";
+        viewLayer = new ArcGISDynamicMapServiceLayer("https://geo.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschapview/MapServer");
+    var layerDefinitions= []
+    if (editType ==="Polygon"){
+      editLayer = new FeatureLayer("https://geo.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschap_edit/FeatureServer/2?token="+token, {
+        mode: FeatureLayer.MODE_ONDEMAND, 
+        outFields: ['*']
+      });
+      viewLayer.setVisibleLayers([2]);
+      layerDefinitions[2] = definitionQueryViewLayer;
+    }
+    else if(editType ==="Line"){
+      editLayer = new FeatureLayer("https://geo.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschap_edit/FeatureServer/1?token="+token, {
+        mode: FeatureLayer.MODE_ONDEMAND, 
+        outFields: ['*']
+      });
+      viewLayer.setVisibleLayers([1]);
+      layerDefinitions[1] = definitionQueryViewLayer;
+    }
+    else if(editType==="Point"){
+      editLayer = new FeatureLayer("https://geo.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschap_edit/FeatureServer/0?token="+token, {
+        mode: FeatureLayer.MODE_ONDEMAND, 
+        outFields: ['*']
+      });
+      viewLayer.setVisibleLayers([0]);
+      layerDefinitions[0] = definitionQueryViewLayer;
+    }
         editLayer.setDefinitionExpression(definitionQueryEditLayer);
-		viewLayer.setLayerDefinitions(layerDefinitions);
-		
+    viewLayer.setLayerDefinitions(layerDefinitions);
+    
 
         map.addLayers([viewLayer,editLayer]);
-		
-		var geoLocate = new LocateButton({
-		  map: map,
-		  highlightLocation: false
-		  }, "LocateButton"
-		);
-		geoLocate.startup();
+    
+    var geoLocate = new LocateButton({
+      map: map,
+      highlightLocation: false
+      }, "LocateButton"
+    );
+    geoLocate.startup();
 
         function initEditor(evt) {
-			var templateLayers = [];
-		  for (var i = 0; i< evt.layers.length;i++){
-		   	if (evt.layers[i].layer.declaredClass ==="esri.layers.FeatureLayer"){templateLayers.push(evt.layers[i].layer);}
-		  } 
-		  map.setExtent(layerOpenTopo.fullExtent)
+      var templateLayers = [];
+      for (var i = 0; i< evt.layers.length;i++){
+        if (evt.layers[i].layer.declaredClass ==="esri.layers.FeatureLayer"){templateLayers.push(evt.layers[i].layer);}
+      } 
+      map.setExtent(layerOpenTopo.fullExtent)
           var templatePicker = new TemplatePicker({
             featureLayers: templateLayers,
             rows: "auto",
@@ -319,37 +319,37 @@ img.esriBasemapGalleryThumbnail {
           var params = { settings: settings };
           myEditor = new Editor(params, 'editorDiv');
           myEditor.startup();
-		  
-		  //zet standaardwaarden op de verborgen velden gebaseerd op de initalisatie
-		  editLayer.templates[0].prototype.attributes.NAAMTOEVOEGER = username;
-		  editLayer.templates[0].prototype.attributes.NAAM = leesteken;
-		  editLayer.templates[0].prototype.attributes.TIJDSTIP = Date.now();
-		  myEditor.attributeInspector.layerInfos[0].hideFields.push( "NAAM");
-		  myEditor.attributeInspector.layerInfos[0].hideFields.push( "NAAMTOEVOEGER");
-		  attInspector = myEditor.attributeInspector;
-		  
-		  
-		   //add a ready button next to the delete button
+      
+      //zet standaardwaarden op de verborgen velden gebaseerd op de initalisatie
+      editLayer.templates[0].prototype.attributes.NAAMTOEVOEGER = username;
+      editLayer.templates[0].prototype.attributes.NAAM = leesteken;
+      editLayer.templates[0].prototype.attributes.TIJDSTIP = Date.now();
+      myEditor.attributeInspector.layerInfos[0].hideFields.push( "NAAM");
+      myEditor.attributeInspector.layerInfos[0].hideFields.push( "NAAMTOEVOEGER");
+      attInspector = myEditor.attributeInspector;
+      
+      
+       //add a ready button next to the delete button
           var readyButton = new Button({ label: "Gereed", "class": "saveButton"},domConstruct.create("div"));
           domConstruct.place(readyButton.domNode, attInspector.deleteBtn.domNode, "before");
           readyButton.on("click", function() {
-		   map.infoWindow.hide();
-		   myEditor.editToolbar.deactivate();
+       map.infoWindow.hide();
+       myEditor.editToolbar.deactivate();
           });
-		  map.infoWindow.resize(350,475);
+      map.infoWindow.resize(350,475);
         }
       });
-	  }
-	  init("Bargeres","mark", "Point", tokenJoel);
+    }
+    init("Brinken","mark", "Polygon", tokenJoel);
     </script>
   </head>
   <body class="claro">
     <div id="main" >
       <div data-dojo-type="dijit/layout/ContentPane" id="map" data-dojo-props="region:'center'">
-	    <div id="LocateButton"></div>
-		<div id="templateDiv" ></div>
-		</div>
-		<div style="position:absolute; right:15px; top:130px; z-Index:999;">
+      <div id="LocateButton"></div>
+    <div id="templateDiv" ></div>
+    </div>
+    <div style="position:absolute; right:15px; top:130px; z-Index:999;">
         <div data-dojo-type="dijit/TitlePane" 
              data-dojo-props="title:'Achtergrondkaart', closable:false, open:false">
           <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:120px; overflow:auto;">
@@ -357,7 +357,7 @@ img.esriBasemapGalleryThumbnail {
           </div>
         </div>
       </div>
-	  <div id="editorDiv" style="display:none;"></div>
+    <div id="editorDiv" style="display:none;"></div>
     </div>
   </body>
 </html>
