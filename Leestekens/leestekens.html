@@ -157,6 +157,7 @@ img.esriBasemapGalleryThumbnail {
       for (var i = 0; i< map.graphicsLayerIds.length; i++){
         var layer = map.getLayer(map.graphicsLayerIds[i]);
         layer.setDefinitionExpression("NAAM  = '"+leesteken+"'");
+        layer.refresh();
       }
       map.setExtent(map.extent);
       
@@ -191,7 +192,7 @@ img.esriBasemapGalleryThumbnail {
        
     });
   }
-  init("Bargeres");
+  init("Aardappelkelder");
   </script>
   </head>
 
