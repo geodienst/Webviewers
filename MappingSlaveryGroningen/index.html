@@ -213,7 +213,7 @@
 
 		require({
 			packages: [
-				{name: 'app', location: '//' + document.location.hostname}
+				{name: 'app', location: '//' + document.location.hostname + document.location.pathname}
 			]
 		}, ['app/papaparse'], function(Papa) {
 			function openDetailsPage(details) {
