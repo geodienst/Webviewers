@@ -45,6 +45,7 @@
 
 	.menu a {
 		float: right;
+		margin-left: 10px;
 	}
 
 	.embed-container {
@@ -148,6 +149,7 @@
 		<h1>Mapping Slavery Groningen</h1>
 		<h3>Het slavernijverleden van Groningen in kaart</h3>
 		<a href="#openModal">Over Mapping Slavery Groningen</a>
+		<a href="#overview">Lijst</a>
 	</div>
 	<div class="embed-container">
 		<div id="map"></div>
@@ -170,8 +172,16 @@
 	
 	<div id="details-page" class="details-page">
 		<div class="content">
-			<h1 class="title" data-column="titel"></h1>
-			<p class="lemma" data-column="lemma"></p>
+			<h1 data-column="titel"></h1>
+			<p data-column="lemma"></p>
+			<a href="#">Terug naar de kaart</a>
+		</div>
+	</div>
+
+	<div id="overview-page" class="details-page">
+		<div class="content">
+			<h1>Overzicht</h1>
+			<ul class="overview"></ul>
 			<a href="#">Terug naar de kaart</a>
 		</div>
 	</div>
@@ -216,30 +226,68 @@
 				{name: 'app', location: '//' + document.location.hostname + document.location.pathname}
 			]
 		}, ['app/papaparse'], function(Papa) {
+			var data = [];
+
+			var dataLoaded = false;
+
+			var onDataLoad = [function() {
+				dataLoaded = true;
+			}];
+
+			Papa.parse('data.csv', {
+				download: true,
+				header: true,
+				complete: function(results) {
+					data = results.data;
+					$.each(onDataLoad, function(i,row) {
+						row();
+					});
+				}
+			});
+
 			function openDetailsPage(details) {
 				var $page = $('#details-page');
 				$page.find('[data-column]').each(function() {
 					var column = $(this).data('column');
 					$(this).text(details[column]);
 				});
+				closePages();
 				$page.show();
 			}
 
-			function closeDetailsPage() {
-				$('#details-page').hide();
+			function closePages() {
+				$('#details-page, #overview-page').hide();
 			}
 
 			function openDetails(id) {
-				Papa.parse('data.csv', {
-					download: true,
-					header: true,
-					step: function(results, parser) {
-						if (results.data[0].ID == id) {
-							openDetailsPage(results.data[0]);
-							parser.abort();
+				if (dataLoaded) {
+					$.each(data, function(i, row) {
+						if (row.ID == id) {
+							openDetailsPage(row);
+							return false;
 						}
-					}
-				});
+					});
+				} else {
+					onDataLoad.push(function() {
+						openDetails(id);
+					});
+				}
+			}
+
+			function openDetailsList() {
+				if (!dataLoaded) {
+					onDataLoad.push(openDetailsList);
+					return;
+				}
+
+				var $overview = $('#overview-page').find('.overview').empty();
+
+				$overview.append($.map(data, function(details) {
+					return $('<li>').append($('<a>').attr('href', '#' + details.ID).text(details.titel));
+				}));
+
+				closePages();
+				$('#overview-page').show();
 			}
 
 			$('#map').on('click', '.esriViewPopup a[href]', function(e) {
@@ -257,7 +305,9 @@
 					return;
 
 				if (window.location.hash == "") {
-					closeDetailsPage();
+					closePages();
+				} else if (window.location.hash == "#overview") {
+					openDetailsList();
 				} else {
 					openDetails(window.location.hash.substr(1));
 				}
