@@ -1,219 +1,150 @@
+<!DOCTYPE html>
+<html>
 <head>
 	<link href='https://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
-</head>
-<style>
-html, body, #map {
-	height: 100%;
- 	width: 100%;
-	margin: 0 !important;
-  	padding: 0 !important;
+	<style>
+	html, body {
+		height: 100%;
+		margin: 0;
+		padding: 0;
+	
+		font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		color: #474747;
 	}
-.body{
-	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-.menu{
-	position: relative;
-	height:3px;
-	max-width: 100%;
-	margin-bottom: 0.5%;
-}
-.title{
-	margin-top: 2px;
-}
-.title h1 {
-	display: inline;
-	float:left;
-	-webkit-margin-before:0.5em;
-	-webkit-margin-after:0.1em;
-	margin-top: 0.5em;
-	margin-left: 0.5em;
-	margin-bottom: 0.1em;
-}
-.title h3{
-	display: inline;
-	float:left;
-	margin-top: 22px;
-}
-.footer{
-	position: relative;
-	display: inline;
-	height:5%;
-	max-width: 100%;
-}
-p{
-	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 14pt;
-	color: #474747;
-	-webkit-margin-before:0em;
-	-webkit-margin-after:0em;
-	margin-top: 0em;
-	margin-bottom: 0em;
-}
-h1{
-	font-family: 'Varela Round', sans-serif;
-	font-size: 22pt;
-	color:#474747;
-}
-h3{
-	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 18px;
-	font-weight: normal;
-	color:#474747;
-	-webkit-margin-before:0.1em;
-	-webkit-margin-after:0.1em;
-	margin-top: 0.1em;
-	margin-bottom: 0.1em;
-	margin-left: 1.5em;
-}
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #333;
-}
 
-li {
-    float: left;
-    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 14px;
-	color: #474747;
-}
+	h1 {
+		font-family: 'Varela Round', sans-serif;
+		font-size: 22pt;
+	}
 
-li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 10px 10px;
-    text-decoration: none;
-}
+	
 
-li a:hover:not(.active) {
-    background-color: #111;
-}
+	.menu {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 70px;
+		line-height: 70px;
+		padding: 0 10px;
+	}
 
-.embed-container {
-	position: relative;
-	max-width: 100%;
-	margin-top: 25px; 
+	.menu h1, .menu h3 {
+		line-height: inherit;
+		display: inline;
+		margin-right: 10px;
+	}
 
-} 
-.embed-container iframe,.embed-container object,.embed-container iframe{
-	position: relative;
-	margin-top: 20px; 
-	left: 0; 
-	width: 100%;
-	height: 83%;
-} 
-small{
-	position: absolute;
-	z-index: 40;
-	bottom: 0;
-	margin-bottom: -15px;
-}
-.modalDialog {
-    position: fixed;
-    font-family: Arial, Helvetica, sans-serif;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 99999;
-    opacity:0;
-    -webkit-transition: opacity 400ms ease-in;
-    -moz-transition: opacity 400ms ease-in;
-    transition: opacity 400ms ease-in;
-    pointer-events: none;
-    overflow: scroll;
-}
-.modalDialog:target {
-    opacity:1;
-    pointer-events: auto;
-}
-.modalDialog > div {
-    width: 80%;
-    text-align: justify;
-    position: relative;
-    margin: 10% auto;
-    overflow: scroll;
-    padding: 5px 20px 13px 20px;
-    border-radius: 4px;
-    background: #fff;
-}
-.close {
-    color: #333;
-	font-size: 25px;
-    line-height: 50px;
-    position: absolute;
-    right: 0px;
-    text-align: center;
-    top: 0px;
-    width: 50px;
-    text-decoration: none;
-    font-weight: bold;
-    -webkit-border-radius: 12px;
-    -moz-border-radius: 12px;
-    border-radius: 12px;
-}
-.close:hover {
-    background: #00d9ff;
-}
-.modaltext{
-	-webkit-margin-after:0.1em;
-	margin-bottom: 0.5em;
-}
-.footer a {
-    text-decoration: none;
-}
+	.menu h3 {
+		font-size: 18pt;
+		font-weight: normal;
+	}
 
-.footer a:visited {
-    text-decoration: none;
-    color:#333;
-}
+	.menu a {
+		float: right;
+	}
 
-.footer a:hover {
-    text-decoration: underline;
-    color:#0645AD;
-}
+	.embed-container {
+		position: absolute;
+		top: 70px;
+		bottom: 70px;
+		left: 0;
+		right: 0;
+	}
 
-.footer a:active {
-    text-decoration: underline;
-    color:#0645AD;
-}
-.footermodal{
-	float: left;
-	margin: 0 20px 0 0;
-	width: 300px;
-	color:#333;
-	margin-top: 0.5%;
-	margin-left: 0.5em;
-}
-</style>
+	.embed-container iframe {
+		width: 100%;
+		height: 100%;
+	}
+
+	.footer {
+		position: absolute;
+		height: 50px;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		padding: 10px;
+		text-align: right;
+	}
+
+	.modal-dialog {
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		opacity: 0;
+		transition: opacity ease-in 400ms;
+		padding: 20px;
+		z-index: 999;
+		background: rgba(0, 0, 0, 0.8);
+		transition: opacity 400ms ease-in;
+    	pointer-events: none;
+	}
+
+	.modal-dialog .content {
+		position: relative;
+		max-width: 840px;
+		background: white;
+		padding: 20px;
+		margin: 0 auto;
+		border-radius: 4px;
+	}
+
+	.modal-dialog:target {
+		display: block;
+		opacity: 1;
+    	pointer-events: auto;
+	}
+
+	.modal-dialog .close {
+		position: absolute;
+		top: 5px;
+		right: 10px;
+		width: 22pt;
+		height: 22pt;
+		line-height: 18pt;
+		text-align: center;
+		text-decoration: none;
+		color: inherit;
+		font-size: 22pt;
+		border-radius: 4px;
+	}
+
+	.modal-dialog .close:hover {
+		background: #00d9ff;
+	}
+
+	.content p {
+		font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    	font-size: 14pt;
+	}
+	
+	</style>
+</head>
 <body>
-<div class="menu">
-	<div class="title">
+	<div class="menu">
 		<h1>Mapping Slavery Groningen</h1>
-		<h3> Het slavernijverleden van Groningen in kaart</h3>
+		<h3>Het slavernijverleden van Groningen in kaart</h3>
+		<a href="#openModal">Over Mapping Slavery Groningen</a>
 	</div>
-</div>
-<div class="embed-container">
-<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" title="Mappingslavery" src="http://rug.maps.arcgis.com/apps/Embed/index.html?webmap=b5dc473c92af45d79915038cc490a58f&amp;extent=6.4613,53.1736,6.7994,53.2934&amp;home=true&amp;zoom=true&amp;scale=false&amp;search=false&amp;searchextent=false&amp;legend=false&amp;disable_scroll=true&amp;theme=light"></iframe>
-</div>
-<div class="footer">
-<div class="footermodal"><p><a href="#openModal">Over Mapping Slavery Groningen</a></p></div>
-		<div class="footerimage"><a href="http://rug.nl"><img src="http://www.rug.nl/about-us/how-to-find-us/huisstijl/logobank/corporatelogo/corporatelogorood/rugr_logonl_rood_rgb.png" width="210px" height="50px" align="right"></a></div>
-</div>
-<div id="openModal" class="modalDialog">
-    <div>	<a href="#close" title="Sluit" class="close">X</a>
-    <div class="modaltext">
-        <h1>Over Mapping Slavery Groningen</h1>
-		<p>
-		De mensen en plaatsen in de Groningse kaart zijn niet onbekend. Het gaat vaak om Jonkers en burgemeesters, borgen en statige herenhuizen. Toch weet niemand iets van hun betrokkenheid bij de geschiedenis van slavenhandel en slavernij. Terwijl deze geschiedenis vaak juist laat zien waarom bepaalde verbanden bestonden. Groningen was de enige stad buiten Holland en Zeeland met een eigen kamer van de WIC: de kamer Stad en Lande.
-		Binnen deze kamer werd, zoals bij alles in het Groningen van de zeventiende en achttiende eeuw, een machtsstrijd uitgevochten tussen de Ommelander Jonkers en de Stadse elite. Groningen had sterke banden met zowel de West als de Afrikaanse Goudkust. Ook na de opheffing van de WIC zijn er sporen te vinden van slavernij. Zo werden er in de stad veel koloniale waren verwerkt en verhandeld. Op deze kaart is te zien hoe sporen van slavenhandel en slavernij overal te vinden zijn waar geld, macht en prestige waren, of waar mensen er naar op zoek gingen.<br><br>Mapping Slavery Groningen is een initiatief van Barbara Henkes en Margriet Fokken, beiden als historici verbonden aan de Rijksuniversiteit Groningen.<br><br>
-		De website en interactive kaart zijn gemaakt door de <a href="http://rug.nl/geo">Geodienst van de Rijksuniversiteit Groiningen.</a>
-		</p>
+	<div class="embed-container">
+		<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" title="Mappingslavery" src="http://rug.maps.arcgis.com/apps/Embed/index.html?webmap=b5dc473c92af45d79915038cc490a58f&amp;extent=6.4613,53.1736,6.7994,53.2934&amp;home=true&amp;zoom=true&amp;scale=false&amp;search=false&amp;searchextent=false&amp;legend=false&amp;disable_scroll=true&amp;theme=light"></iframe>
+	</div>
+	<div class="footer">
+		<a href="http://rug.nl" target="_blank"><img src="http://www.rug.nl/about-us/how-to-find-us/huisstijl/logobank/corporatelogo/corporatelogorood/rugr_logonl_rood_rgb.png" width="210" height="50"></a>
+	</div>
+	<div id="openModal" class="modal-dialog">
+		<div class="content">
+			<a href="#close" title="Sluit" class="close">&times;</a>
+			<div class="modaltext">
+				<h1>Over Mapping Slavery Groningen</h1>
+				<p>De mensen en plaatsen in de Groningse kaart zijn niet onbekend. Het gaat vaak om Jonkers en burgemeesters, borgen en statige herenhuizen. Toch weet niemand iets van hun betrokkenheid bij de geschiedenis van slavenhandel en slavernij. Terwijl deze geschiedenis vaak juist laat zien waarom bepaalde verbanden bestonden. Groningen was de enige stad buiten Holland en Zeeland met een eigen kamer van de WIC: de kamer Stad en Lande.</p>
+				<p>Binnen deze kamer werd, zoals bij alles in het Groningen van de zeventiende en achttiende eeuw, een machtsstrijd uitgevochten tussen de Ommelander Jonkers en de Stadse elite. Groningen had sterke banden met zowel de West als de Afrikaanse Goudkust. Ook na de opheffing van de WIC zijn er sporen te vinden van slavernij. Zo werden er in de stad veel koloniale waren verwerkt en verhandeld. Op deze kaart is te zien hoe sporen van slavenhandel en slavernij overal te vinden zijn waar geld, macht en prestige waren, of waar mensen er naar op zoek gingen.</p>
+				<p>Mapping Slavery Groningen is een initiatief van Barbara Henkes en Margriet Fokken, beiden als historici verbonden aan de Rijksuniversiteit Groningen.</p>
+				<p>De website en interactive kaart zijn gemaakt door de <a href="http://rug.nl/geo">Geodienst van de Rijksuniversiteit Groiningen</a>.</p>
+			</div>
 		</div>
-     </div>
-</div>
+	</div>
 </body>
+</html>
