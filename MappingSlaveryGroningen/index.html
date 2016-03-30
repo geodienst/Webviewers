@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+	<title>Mapping Slavery in Groningen</title>
+	<link rel="stylesheet" href="https://js.arcgis.com/3.15/esri/css/esri.css">
 	<link href='https://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
 	<style>
 	html, body {
@@ -16,7 +20,6 @@
 		font-family: 'Varela Round', sans-serif;
 		font-size: 22pt;
 	}
-
 	
 
 	.menu {
@@ -52,7 +55,7 @@
 		right: 0;
 	}
 
-	.embed-container iframe {
+	.embed-container #map {
 		width: 100%;
 		height: 100%;
 	}
@@ -79,7 +82,7 @@
 		z-index: 999;
 		background: rgba(0, 0, 0, 0.8);
 		transition: opacity 400ms ease-in;
-    	pointer-events: none;
+		pointer-events: none;
 	}
 
 	.modal-dialog .content {
@@ -94,7 +97,7 @@
 	.modal-dialog:target {
 		display: block;
 		opacity: 1;
-    	pointer-events: auto;
+		pointer-events: auto;
 	}
 
 	.modal-dialog .close {
@@ -117,7 +120,25 @@
 
 	.content p {
 		font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    	font-size: 14pt;
+		font-size: 14pt;
+	}
+
+	.details-page {
+		position: fixed;
+		top: 70px;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: white;
+		z-index: 100;
+		display: none;
+		padding: 10px;
+		overflow: auto;
+	}
+
+	.details-page .content {
+		max-width: 800px;
+		margin: 0 auto;
 	}
 	
 	</style>
@@ -129,7 +150,7 @@
 		<a href="#openModal">Over Mapping Slavery Groningen</a>
 	</div>
 	<div class="embed-container">
-		<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" title="Mappingslavery" src="http://rug.maps.arcgis.com/apps/Embed/index.html?webmap=b5dc473c92af45d79915038cc490a58f&amp;extent=6.4613,53.1736,6.7994,53.2934&amp;home=true&amp;zoom=true&amp;scale=false&amp;search=false&amp;searchextent=false&amp;legend=false&amp;disable_scroll=true&amp;theme=light"></iframe>
+		<div id="map"></div>
 	</div>
 	<div class="footer">
 		<a href="http://rug.nl" target="_blank"><img src="http://www.rug.nl/about-us/how-to-find-us/huisstijl/logobank/corporatelogo/corporatelogorood/rugr_logonl_rood_rgb.png" width="210" height="50"></a>
@@ -146,5 +167,106 @@
 			</div>
 		</div>
 	</div>
+	
+	<div id="details-page" class="details-page">
+		<div class="content">
+			<h1 class="title" data-column="titel"></h1>
+			<p class="lemma" data-column="lemma"></p>
+		</div>
+	</div>
+
+	<script>var dojoConfig = { parseOnLoad: true };</script>
+	<script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+	<script src="https://js.arcgis.com/3.15compact/"></script>
+	<script>
+		var map,
+			webmapId = "128046dd66f14e6593b2b8817c86ac46";
+
+		require([
+			"esri/map",
+			"esri/arcgis/utils",
+			"esri/dijit/Legend",
+			"dojo/domReady!"
+		], function (Map, arcgisUtils, Legend) {
+			arcgisUtils.createMap(webmapId, "map").then(function (response) {
+				map = response.map;
+
+				var legend = new Legend({
+					map: map,
+					layerInfos:(arcgisUtils.getLegendLayers(response))
+				}, "legendDiv");
+				
+				legend.startup();
+				
+				esri.config.defaults.map.logoLink = "http://www.rug.nl/geo";
+				
+				try {
+					document.getElementsByClassName('logo-med')[0].style.backgroundImage="url('http://geodienst.webhosting.rug.nl/img/odp/geodienst_color2_70.png')"; 
+					document.getElementsByClassName('logo-med')[0].style.backgroundRepeat="no-repeat";  
+					document.getElementsByClassName('logo-sm')[0].style.backgroundImage="url('http://geodienst.webhosting.rug.nl/img/odp/supersmallesrigeologo.png')"; 
+					document.getElementsByClassName('logo-sm')[0].style.backgroundRepeat="no-repeat";  
+				}
+				catch (e) {}
+			});
+		});
+
+		require({
+			packages: [
+				{name: 'app', location: '//' + document.location.hostname}
+			]
+		}, ['app/papaparse'], function(Papa) {
+			function openDetailsPage(details) {
+				var $page = $('#details-page');
+				$page.find('[data-column]').each(function() {
+					var column = $(this).data('column');
+					$(this).text(details[column]);
+				});
+				$page.show();
+			}
+
+			function closeDetailsPage() {
+				$('#details-page').hide();
+			}
+
+			function openDetails(id) {
+				Papa.parse('data.csv', {
+					download: true,
+					header: true,
+					step: function(results, parser) {
+						if (results.data[0].ID == id) {
+							openDetailsPage(results.data[0]);
+							parser.abort();
+						}
+					}
+				});
+			}
+
+			$('#map').on('click', '.esriViewPopup a[href]', function(e) {
+				var link = $(this).prop('href'),
+					id = link.substr(link.indexOf('#') + 1);
+
+				document.location.hash = id;
+				e.preventDefault();
+			});
+
+			function locationHashChanged() {
+				var ignored = ['#close', '#openDialog'];
+				
+				if (ignored.indexOf(window.location.hash) !== -1)
+					return;
+
+				if (window.location.hash == "") {
+					closeDetailsPage();
+				} else {
+					openDetails(window.location.hash.substr(1));
+				}
+			}
+
+			$(window).on('hashchange', locationHashChanged);
+
+			// If the page is already opened with a hash, show details directly
+			locationHashChanged();
+		});
+	</script>
 </body>
 </html>
