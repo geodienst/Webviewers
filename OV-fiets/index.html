@@ -12,7 +12,432 @@
       margin:0;
       height:100%;
     
+    }<!DOCTYPE HTML>
+<html>
+<head>
+  <link rel='shortcut icon' type='image/x-icon' href='http://geodienst.webhosting.rug.nl/img/odp/favicon.ico'/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>OV-fiets geschiedenis</title>
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
+  <style>
+    html, body  {
+      padding:0;
+      margin:0;
+      height:100%;
+    
     }
+    #map  {
+    position: absolute;
+    left:0px;
+    right:0px;
+    top:0px;
+    bottom:200px;
+    }
+
+    #map .logo-med {
+    width: 70px;
+    height: 70px;
+    }
+
+    #map .logo-sm {  
+    background-image: url('http://geodienst.webhosting.rug.nl/img/odp/supersmallesrigeologo.png') !important;  
+    height: 19px;  
+    width: 22px;
+    background-repeat: no-repeat;
+    }  
+
+    #chart{
+    position: absolute;
+    left:0px;
+    right:0px;
+    bottom:0px;
+    height: 200px;
+    background-color:#2a2a2b;
+    }
+        
+  </style>
+  <script src="//js.arcgis.com/3.14/"></script>
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script>
+    var map, graphic, layer; 
+  
+  /**
+ * Dark theme for Highcharts JS
+ * @author Torstein Honsi
+ */
+
+// Load the fonts
+Highcharts.createElement('link', {
+   href: '//fonts.googleapis.com/css?family=Unica+One',
+   rel: 'stylesheet',
+   type: 'text/css'
+}, null, document.getElementsByTagName('head')[0]);
+
+Highcharts.theme = {
+   colors: ["#2b908f", "#90ee7e", "#f45b5b", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
+      "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+   chart: {
+      backgroundColor: {
+         linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
+         stops: [
+            [0, '#2a2a2b'],
+            [1, '#3e3e40']
+         ]
+      },
+      style: {
+         fontFamily: "'Unica One', sans-serif"
+      },
+      plotBorderColor: '#606063'
+   },
+   title: {
+      style: {
+         color: '#E0E0E3',
+         textTransform: 'uppercase',
+         fontSize: '20px'
+      }
+   },
+   subtitle: {
+      style: {
+         color: '#E0E0E3',
+         textTransform: 'uppercase'
+      }
+   },
+   xAxis: {
+      gridLineColor: '#707073',
+      labels: {
+         style: {
+            color: '#E0E0E3'
+         }
+      },
+      lineColor: '#707073',
+      minorGridLineColor: '#505053',
+      tickColor: '#707073',
+      title: {
+         style: {
+            color: '#A0A0A3'
+
+         }
+      }
+   },
+   yAxis: {
+      gridLineColor: '#707073',
+      labels: {
+         style: {
+            color: '#E0E0E3'
+         }
+      },
+      lineColor: '#707073',
+      minorGridLineColor: '#505053',
+      tickColor: '#707073',
+      tickWidth: 1,
+      title: {
+         style: {
+            color: '#A0A0A3'
+         }
+      }
+   },
+   tooltip: {
+      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      style: {
+         color: '#F0F0F0'
+      }
+   },
+   plotOptions: {
+      series: {
+         dataLabels: {
+            color: '#B0B0B3'
+         },
+         marker: {
+            lineColor: '#333'
+         }
+      },
+      boxplot: {
+         fillColor: '#505053'
+      },
+      candlestick: {
+         lineColor: 'white'
+      },
+      errorbar: {
+         color: 'white'
+      }
+   },
+   legend: {
+      itemStyle: {
+         color: '#E0E0E3'
+      },
+      itemHoverStyle: {
+         color: '#FFF'
+      },
+      itemHiddenStyle: {
+         color: '#606063'
+      }
+   },
+   credits: {
+      style: {
+         color: '#666'
+      }
+   },
+   labels: {
+      style: {
+         color: '#707073'
+      }
+   },
+
+   drilldown: {
+      activeAxisLabelStyle: {
+         color: '#F0F0F3'
+      },
+      activeDataLabelStyle: {
+         color: '#F0F0F3'
+      }
+   },
+
+   navigation: {
+      buttonOptions: {
+         symbolStroke: '#DDDDDD',
+         theme: {
+            fill: '#505053'
+         }
+      }
+   },
+
+   // scroll charts
+   rangeSelector: {
+      buttonTheme: {
+         fill: '#505053',
+         stroke: '#000000',
+         style: {
+            color: '#CCC'
+         },
+         states: {
+            hover: {
+               fill: '#707073',
+               stroke: '#000000',
+               style: {
+                  color: 'white'
+               }
+            },
+            select: {
+               fill: '#000003',
+               stroke: '#000000',
+               style: {
+                  color: 'white'
+               }
+            }
+         }
+      },
+      inputBoxBorderColor: '#505053',
+      inputStyle: {
+         backgroundColor: '#333',
+         color: 'silver'
+      },
+      labelStyle: {
+         color: 'silver'
+      }
+   },
+
+   navigator: {
+      handles: {
+         backgroundColor: '#666',
+         borderColor: '#AAA'
+      },
+      outlineColor: '#CCC',
+      maskFill: 'rgba(255,255,255,0.1)',
+      series: {
+         color: '#7798BF',
+         lineColor: '#A6C7ED'
+      },
+      xAxis: {
+         gridLineColor: '#505053'
+      }
+   },
+
+   scrollbar: {
+      barBackgroundColor: '#808083',
+      barBorderColor: '#808083',
+      buttonArrowColor: '#CCC',
+      buttonBackgroundColor: '#606063',
+      buttonBorderColor: '#606063',
+      rifleColor: '#FFF',
+      trackBackgroundColor: '#404043',
+      trackBorderColor: '#404043'
+   },
+
+   // special colors for some of the
+   legendBackgroundColor: 'rgba(0, 0, 0, 0.5)',
+   background2: '#505053',
+   dataLabelsColor: '#B0B0B3',
+   textColor: '#C0C0C0',
+   contrastTextColor: '#F0F0F3',
+   maskColor: 'rgba(255,255,255,0.3)'
+};
+
+// Apply the theme
+Highcharts.setOptions(Highcharts.theme);
+  
+  
+  
+    require([
+      "esri/map", 
+    "esri/layers/FeatureLayer", 
+     "esri/tasks/query",
+     "esri/TimeExtent",
+	 "esri/tasks/StatisticDefinition",
+      "dojo/domReady!"
+    ], function(
+      Map, FeatureLayer,Query,TimeExtent,StatisticDefinition
+    )  {
+
+      map = new Map("map", {
+        center: [-56.049, 38.485],
+        zoom: 3,
+        basemap: "dark-gray"
+      });
+
+      //add custom logo instead of esri
+      esri.config.defaults.map.logoLink = "http://www.rug.nl/society-business/centre-for-information-technology/research/services/gis/blog/blog-19-11-2015-live-ov-fiets-kaart"      
+      try{
+      document.getElementsByClassName('logo-med')[0].style.backgroundImage="url('http://geodienst.webhosting.rug.nl/img/odp/geodienst_color3_70.png')"; 
+      document.getElementsByClassName('logo-med')[0].style.backgroundRepeat="no-repeat";  
+      document.getElementsByClassName('logo-sm')[0].style.backgroundImage="url('http://geodienst.webhosting.rug.nl/img/odp/supersmallesrigeologo.png')"; 
+      document.getElementsByClassName('logo-sm')[0].style.backgroundRepeat="no-repeat";  
+	  }
+	  catch(jammerdan){}
+
+    layer = new FeatureLayer("https://geo.rug.nl/arcgis/rest/services/VerkeerInfra/ovfiets_read/FeatureServer/0",{
+    outFields: ["*"]}
+    );
+    layer.on("load", function(l){
+    map.setExtent(l.layer.fullExtent);
+    var query = new Query();
+      query.where = "LOCATIONCODE = 'ut002'";
+         query.outFields = [ "DATUMTIJD,DESCRIPTION,RENTALBIKES" ];
+      query.orderByFields = ["DATUMTIJD  DESC"];
+      query.returnGeometry = false;
+          // Query for the features with the given object ID
+          layer.queryFeatures(query, function(featureSet) {
+      var t = featureSet;
+      createchart(featureSet);
+      });
+    });
+	var timeQuery = new Query();
+	var statisticDefinition = new StatisticDefinition();
+  statisticDefinition.statisticType = "max";
+  statisticDefinition.onStatisticField = "DATUMTIJD";
+  statisticDefinition.outStatisticFieldName = "Last";
+
+  timeQuery.outStatistics = [statisticDefinition];
+  layer.queryFeatures(timeQuery, function(featureSet) {
+  var startdate = new Date(featureSet.features[0].attributes.LAST);
+    //startdate.setMinutes(startdate.getMinutes() - 5); 
+    var timeExtent = new TimeExtent();
+    timeExtent.startTime = startdate;
+    map.setTimeExtent(timeExtent);
+	map.addLayer(layer);
+  });
+    
+  
+    
+
+    
+    layer.on("click", function(evt){          
+          
+      var query = new Query();
+      query.where = "LOCATIONCODE = '" + evt.graphic.attributes.LOCATIONCODE +"'";
+          query.outFields = [ "DATUMTIJD,DESCRIPTION,RENTALBIKES" ];
+      query.orderByFields = ["DATUMTIJD  DESC"];
+      query.returnGeometry = false;
+          // Query for the features with the given object ID
+          layer.queryFeatures(query, function(featureSet) {
+      var t = featureSet;
+      createchart(featureSet);
+      });
+        });
+    
+    
+    
+
+    });
+  function createchart(featureSet){
+    var data = [];
+    for (var i = featureSet.features.length-1; i>=0; i--){
+      data.push([featureSet.features[i].attributes.DATUMTIJD+3600000,featureSet.features[i].attributes.RENTALBIKES ]);
+    }
+    var loc = featureSet.features[0].attributes.DESCRIPTION;
+    $('#chart').highcharts({
+            chart: {
+                zoomType: 'x'
+            },
+            title: {
+                text: 'Aantal beschikbare fietsen op locatie '+ loc + ': '+ featureSet.features[0].attributes.RENTALBIKES
+            },
+            subtitle: {
+                text: document.ontouchstart === undefined ?
+                        'Klik en sleep in de grafiek om in te zoomen' : 'Zoom in op de grafiek met twee vingers'
+            },
+            xAxis: {
+                type: 'datetime'
+            },
+            yAxis: {
+        min: 0,
+                title: {
+                    text: 'Aantal fietsen'
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                area: {
+                    fillColor: {
+                        linearGradient: {
+                            x1: 0,
+                            y1: 0,
+                            x2: 0,
+                            y2: 1
+                        },
+                        stops: [
+                            [0, Highcharts.getOptions().colors[0]],
+                            [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                        ]
+                    },
+                    marker: {
+                        radius: 2
+                    },
+                    lineWidth: 1,
+                    states: {
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    threshold: null
+                }
+            },
+
+            series: [{
+                type: 'area',
+                name: 'Aantal beschikbare fietsen',
+                data: data
+            }]
+        });
+  }
+  </script>
+</head>
+<body>
+  <div id="map" class="map">
+    
+  </div>
+  <div id="chart">
+  </div>
+
+</body>
+</html>
+
+<style type="text/css">
+</style>
+
     #map  {
     position: absolute;
     left:0px;
