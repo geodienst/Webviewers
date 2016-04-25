@@ -211,6 +211,8 @@ img.esriBasemapGalleryThumbnail {
         map = new Map("map", { 
           center: [5.314334,52.038308],
           zoom: 8,
+          minZoom: 3,
+          maxZoom:13,
           slider: true
       
         });
@@ -278,7 +280,7 @@ img.esriBasemapGalleryThumbnail {
     
     var geoLocate = new LocateButton({
       map: map,
-      highlightLocation: false
+      highlightLocation: true
       }, "LocateButton"
     );
     geoLocate.startup();

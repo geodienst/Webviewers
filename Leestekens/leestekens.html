@@ -148,7 +148,8 @@ img.esriBasemapGalleryThumbnail {
         webMercatorUtils) {
       arcgisUtils.createMap(webmapId, "mapDiv", {
         mapOptions: {               
-          minZoom: 3
+          minZoom: 3,
+          maxZoom:13
         },
         geometryServiceURL: "http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer"
     }).then(function (response){
@@ -163,7 +164,7 @@ img.esriBasemapGalleryThumbnail {
       
       var geoLocate = new LocateButton({
         map: map,
-        highlightLocation: false
+        highlightLocation: true
         }, "LocateButton"
       );
       geoLocate.startup();
