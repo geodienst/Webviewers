@@ -125,7 +125,7 @@ img.esriBasemapGalleryThumbnail {
   var map
   function init(leesteken){
     
-    webmapId = "2858ba25f2c04f7c83e80c0630fbf1aa";
+    webmapId = "286606d8d5214383ae0cebd6ae004f40";
     var leesteken =leesteken;
     require([
       "esri/map",
@@ -155,10 +155,13 @@ img.esriBasemapGalleryThumbnail {
     }).then(function (response){
       esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
       map = response.map;
+	  var subscriptions=[];
       for (var i = 0; i< map.graphicsLayerIds.length; i++){
         var layer = map.getLayer(map.graphicsLayerIds[i]);
-        layer.setDefinitionExpression("NAAM  = '"+leesteken+"'");
-        layer.refresh();
+		layer.setDefinitionExpression("NAAM  = '"+leesteken+"'");
+			layer.setVisibility(true);
+		//layer.setVisibility(false);
+		//setLayerDefinition(layer);
       }
       map.setExtent(map.extent);
       
@@ -192,8 +195,18 @@ img.esriBasemapGalleryThumbnail {
     
        
     });
+	/*
+	function setLayerDefinition(layer){
+		
+		var subscription = layer.on("update-end", function(){			
+			subscription.remove();
+			layer.setDefinitionExpression("NAAM  = '"+leesteken+"'");
+			layer.setVisibility(true);
+			layer.refresh();
+		});
+	}*/
   }
-  init("Kolk");
+  init("Hoogstamboomgaard");
   </script>
   </head>
 
