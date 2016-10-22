@@ -1,0 +1,266 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <link rel='shortcut icon' type='image/x-icon' href='http://geodienst.webhosting.rug.nl/img/odp/favicon.ico'/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Gridkit open energy network</title>
+  <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
+  <style>
+    html, body  {
+      padding:0;
+      margin:0;
+      height:100%;
+    
+    }
+    html, body  {
+      padding:0;
+      margin:0;
+      height:100%;
+    
+    }
+    #map  {
+    position: absolute;
+    left:50px;
+    right:0px;
+    top:0px;
+    bottom:0px;
+    }
+	#info{
+	position: absolute;
+	left: 0px;
+	top:0px;
+	bottom:0px;	
+    background-color:#000000;
+	color:#EEEEEE;
+	}
+	.expandedinfo{
+	width: 200px;
+	}
+	.collapsedinfo{
+	width: 50px;
+	}
+
+    #map .logo-med {
+    width: 70px;
+    height: 70px;
+    }
+
+    #map .logo-sm {  
+    background-image: url('http://geodienst.webhosting.rug.nl/img/odp/supersmallesrigeologo.png') !important;  
+    height: 19px;  
+    width: 22px;
+    background-repeat: no-repeat;
+    }  
+
+    #chart{
+    position: absolute;
+    left:0px;
+    right:0px;
+    bottom:0px;
+    height: 200px;
+    background-color:#2a2a2b;
+    }
+        
+  </style>
+  <script src="//js.arcgis.com/3.14/"></script>
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script>
+    var map, graphic, linklayer,verticelayer, currentfeature; 
+  
+  
+  
+    require([
+      "esri/map", 
+    "esri/layers/FeatureLayer", 
+	"esri/graphic",
+     "esri/tasks/query",
+     "esri/geometry/Extent",
+	 "esri/SpatialReference",
+        "dojo/on",
+        "dojo/_base/connect", 
+        "dojo/dom",
+		"esri/symbols/SimpleMarkerSymbol",
+		"esri/symbols/SimpleLineSymbol",
+		"esri/Color",
+      "dojo/domReady!"
+    ], function(
+      Map, FeatureLayer,Graphic,Query,Extent,SpatialReference,
+        on, 
+        connect,
+        dom,
+		SimpleMarkerSymbol,
+		SimpleLineSymbol,Color
+    )  {
+
+      map = new Map("map", {
+        center: [-56.049, 38.485],
+        zoom: 3,
+        basemap: "dark-gray"
+      });
+
+      //add custom logo instead of esri
+      //esri.config.defaults.map.logoLink = "http://www.rug.nl/society-business/centre-for-information-technology/research/services/gis/blog/blog-19-11-2015-live-ov-fiets-kaart"      
+      try{
+      document.getElementsByClassName('logo-med')[0].style.backgroundImage="url('http://geodienst.webhosting.rug.nl/img/odp/geodienst_color3_70.png')"; 
+      document.getElementsByClassName('logo-med')[0].style.backgroundRepeat="no-repeat";  
+      document.getElementsByClassName('logo-sm')[0].style.backgroundImage="url('http://geodienst.webhosting.rug.nl/img/odp/supersmallesrigeologo.png')"; 
+      document.getElementsByClassName('logo-sm')[0].style.backgroundRepeat="no-repeat";  
+	  }
+	  catch(jammerdan){}
+
+    linklayer = new FeatureLayer("https://trr-08.id.rug.nl/arcgis/rest/services/test/Gridkit/MapServer/1",{
+    outFields: ["*"]}
+    );
+	verticelayer = new FeatureLayer("https://trr-08.id.rug.nl/arcgis/rest/services/test/Gridkit/MapServer/0",{outFields:["*"]});
+	var extent= new Extent(-376196.26571298274, 6104647.205685271, 1910799.620578883, 7295841.854481142, new SpatialReference({ wkid:102100 }));   
+    map.setExtent(extent);
+	
+    map.addLayer(linklayer);
+    map.addLayer(verticelayer);
+	
+	verticelayer.on("click", function(evt){          
+		loadVertice(evt.graphic);
+	});
+	loadVertice = function(feature){
+		var attr = feature.attributes;
+		var v_id = feature.attributes.V_ID;
+		var query = new Query();
+		query.where = "V_ID_1 = " + v_id + " OR V_ID_2 = " + v_id;
+        query.outFields = [ "*" ];
+        query.returnGeometry = true;
+          // Query for the features with the given object ID
+        linklayer.queryFeatures(query, function(featureSet) {
+			var t = featureSet;
+			showInfo(featureSet.features,[feature]);
+		});		   
+	}
+	
+	linklayer.on("click", function(evt){          
+		 loadLink(evt.graphic);     
+	});
+	loadLink = function(feature){
+		var attr = feature.attributes;
+		var v_id_1 = feature.attributes.V_ID_1;
+		var v_id_2 = feature.attributes.V_ID_2;
+		var query = new Query();
+		query.where = "V_ID = " + v_id_1 + " OR V_ID = " + v_id_2;
+        query.outFields = [ "*" ];
+        query.returnGeometry = true;
+          // Query for the features with the given object ID
+        verticelayer.queryFeatures(query, function(featureSet) {
+			var t = featureSet;
+			showInfo([feature], featureSet.features);
+		});		
+	}
+	showInfo = function(links, vertices){
+		map.graphics.clear();
+		var info = document.getElementById("info");
+		while (info.firstChild) {
+			info.removeChild(info.firstChild);
+		}	
+		var h3 = document.createElement("h3");
+		h3.innerHTML = "Vertices";
+		info.appendChild(h3);
+				
+		for(var i =0; i< vertices.length; i++){
+			var  graphic = new Graphic(vertices[i].toJson())
+			info.appendChild(templateLink(graphic));
+			graphic.symbol = new SimpleMarkerSymbol();
+			map.graphics.add(graphic);
+		}
+		var h3links = document.createElement("h3");
+		h3links.innerHTML = "Links";
+		info.appendChild(h3links);
+		for (var i=0;i<links.length;i++){
+			var graphic = new Graphic(links[i].toJson());
+			info.appendChild(templateVertice(graphic));
+			graphic.symbol = new SimpleLineSymbol();
+			map.graphics.add(graphic);
+		}
+		info.className = "expandedinfo";
+		
+	}
+	templateLink = function(vertice){
+		var div = document.createElement("div");
+		div.innerHTML =  "<span>VOLTAGE</span><span>"+vertice.attributes.VOLTAGE+"</span><br />"+
+		"<span>FREQUENCY</span><span>"+vertice.attributes.FREQUENCY+"</span><br />"+
+		"<span>NAME</span><span>"+vertice.attributes.NAME+"</span><br />"+
+		"<span>OPERATOR</span><span>"+vertice.attributes.OPERATOR+"</span><br /><br />";
+		on(div, "click", function(){
+			if(currentfeature ===vertice){ 
+				loadVertice(vertice);
+			}
+			else{
+				highlightVertice(vertice);
+				currentfeature = vertice;
+			}
+		});
+		return div;
+	}
+	templateVertice = function(link){
+		var div = document.createElement("div");
+		
+		div.innerHTML = "<span>VOLTAGE</span><span>"+link.attributes.VOLTAGE+"</span><br />"+
+		"<span>CABLES</span><span>"+link.attributes.CABLES+"</span><br />"+
+		"<span>WIRES</span><span>"+link.attributes.WIRES+"</span><br />"+
+		"<span>FREQUENCY</span><span>"+link.attributes.FREQUENCY+"</span><br />"+
+		"<span>NAME</span><span>"+link.attributes.NAME+"</span><br />"+
+		"<span>OPERATOR</span><span>"+link.attributes.OPERATOR+"</span><br />"+
+		"<span>LENGTH_M</span><span>"+link.attributes.LENGTH_M+"</span><br />"+
+		"<span>R_OHMKM</span><span>"+link.attributes.R_OHMKM+"</span><br />"+
+		"<span>X_OHMKM</span><span>"+link.attributes.X_OHMKM+"</span><br /><br />";
+		on(div, "click", function(){
+			if (currentfeature===link){
+				loadLink(link);
+			}
+			else{
+				higlightLink(link);
+				currentfeature= link;
+			}
+		});
+		return div;
+	}
+	
+	higlightLink = function(link){
+		resetcurrentFeature();
+		link.symbol.color = Color.fromHex("#FF6A00");
+		link.draw();
+	}
+	highlightVertice = function(vertice){
+		resetcurrentFeature();
+		vertice.symbol.outline.color = Color.fromHex("#FF6A00");
+		vertice.draw();
+	}
+	resetcurrentFeature = function(){
+		if(currentfeature){
+			if ( currentfeature.geometry.type ==="polyline"){
+				currentfeature.symbol = new SimpleLineSymbol();
+			}
+			else{
+				currentfeature.symbol = new SimpleMarkerSymbol();
+			}
+			currentfeature.draw();
+		}
+		
+	}
+    
+    
+
+    });
+  </script>
+</head>
+<body>
+  <div id="map" class="map">
+    
+  </div>
+  <div id="info" class="collapsedinfo">
+  
+  </div>	
+
+</body>
+</html>
+
+<style type="text/css">
+</style>
