@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
   <html>
   <head>
   <title>Leestekens</title>
@@ -6,10 +6,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
       
-      <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/dojo/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+      <link rel="stylesheet" href="https://js.arcgis.com/3.7/js/dojo/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.7/js/esri/css/esri.css">
   <style>
-    @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Roboto+Slab:400,700);
+    @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Roboto+Slab:400,700);
     html,body,#container,#mapDiv{
     padding:0;
     margin:0;
@@ -120,12 +120,12 @@ img.esriBasemapGalleryThumbnail {
   <script>var dojoConfig = {
     locale: "nl",
     parseOnLoad: true};</script>
-  <script src="http://js.arcgis.com/3.14compact/"></script>
+  <script src="https://js.arcgis.com/3.14compact/"></script>
   <script>
   var map
   function init(leesteken){
     
-    webmapId = "286606d8d5214383ae0cebd6ae004f40";
+   webmapId = "0301f4150b394c6a8f05896efa53cb2f";
     var leesteken =leesteken;
     require([
       "esri/map",
@@ -151,9 +151,9 @@ img.esriBasemapGalleryThumbnail {
           minZoom: 3,
           maxZoom:13
         },
-        geometryServiceURL: "http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer"
+        geometryServiceURL: "https://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer"
     }).then(function (response){
-      esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+      esriConfig.defaults.geometryService = new GeometryService("https://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
       map = response.map;
 	  var subscriptions=[];
       for (var i = 0; i< map.graphicsLayerIds.length; i++){
@@ -180,7 +180,7 @@ img.esriBasemapGalleryThumbnail {
         basemapGallery.on("error", function(msg) {
         console.log("basemap gallery error:  ", msg);
         });
-          var baselayerOpenTopo = new BasemapLayer({url:"http://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Open_Topo/MapServer"});
+          var baselayerOpenTopo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Open_Topo/MapServer"});
       var basemapOpenTopo = new Basemap({layers:[baselayerOpenTopo],title:"Kaart",thumbnailUrl:"images/opentopo2.png"});
       basemapGallery.add(basemapOpenTopo);
       
