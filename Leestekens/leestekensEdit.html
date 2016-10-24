@@ -5,10 +5,10 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Edit Leestekenss</title>
 
-    <link rel="stylesheet" href="http://js.arcgis.com/3.14/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" href="http://js.arcgis.com/3.14/esri/css/esri.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.14/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.14/esri/css/esri.css">
     <style>
-      @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Roboto+Slab:400,700);
+      @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Roboto+Slab:400,700);
       html,body{height:100%;width:100%;margin:0;overflow:hidden;font-family: 'Open Sans', sans-serif;}
       #map{
         padding:0;
@@ -152,7 +152,7 @@ img.esriBasemapGalleryThumbnail {
 }
     </style>
     
-    <script src="http://js.arcgis.com/3.14/"></script>
+    <script src="https://js.arcgis.com/3.14/"></script>
     <script>
     //deze token werkt alleen lokaal bij mij
     var tokenJoel = "M8CTeluFKPRDCAErnu7OoFIJOQs4ilOCQgF_-9j6VHAq15qqEJ6GTpt1a2VTEVoHKvwLJOkzY5UOr2GsjmLMNS9Om-dd-cHtopRAMEkvUIs."; //http://localhost/rug/Leestekens/LeestekensEdit.html
@@ -206,7 +206,7 @@ img.esriBasemapGalleryThumbnail {
         parser.parse();
     
 
-        esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+        esriConfig.defaults.geometryService = new GeometryService("https://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
         
         map = new Map("map", { 
           center: [5.314334,52.038308],
@@ -229,10 +229,10 @@ img.esriBasemapGalleryThumbnail {
       console.log("basemap gallery error:  ", msg);
     });
     
-    var baselayerOpenTopo = new BasemapLayer({url:"http://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Open_Topo/MapServer"});
+    var baselayerOpenTopo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Open_Topo/MapServer/"});
     var basemapOpenTopo = new Basemap({layers:[baselayerOpenTopo],title:"Kaart",thumbnailUrl:"images/opentopo.png"});
     basemapGallery.add(basemapOpenTopo);
-    var layerOpenTopo = new ArcGISTiledMapServiceLayer("http://tiles.arcgis.com/tiles/nSZVuSZjHpEZZbRo/arcgis/rest/services/Open_Topo/MapServer");
+    var layerOpenTopo = new ArcGISTiledMapServiceLayer("https://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Open_Topo/MapServer/");
     map.addLayer(layerOpenTopo);
     
     var baselayerLufo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Luchtfoto/Luchtfoto/MapServer"});
