@@ -19,6 +19,15 @@
       height:100%;
     
     }
+	.new{
+		background-color:#FF0000;
+	}
+	.current{
+		background-color:#00FF00;
+	}
+	.old{
+		background-color:#0000FF;
+	}
     #map  {
     position: absolute;
     left:50px;
@@ -61,23 +70,23 @@
     height: 200px;
     background-color:#2a2a2b;
     }
+	
         
   </style>
   <script src="//js.arcgis.com/3.14/"></script>
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script>
-    var map, graphic, linklayer,verticelayer, currentfeature; 
+    var map, graphic, linklayer,verticelayer, selectedfeature, oldfeature, currentfeature;
   
-  
-  
+
     require([
       "esri/map", 
-    "esri/layers/FeatureLayer", 
-	"esri/graphic",
-     "esri/tasks/query",
-     "esri/geometry/Extent",
-	 "esri/SpatialReference",
+      "esri/layers/FeatureLayer", 
+	  "esri/graphic",
+      "esri/tasks/query",
+      "esri/geometry/Extent",
+	  "esri/SpatialReference",
         "dojo/on",
         "dojo/_base/connect", 
         "dojo/dom",
@@ -110,10 +119,10 @@
 	  }
 	  catch(jammerdan){}
 
-    linklayer = new FeatureLayer("https://trr-08.id.rug.nl/arcgis/rest/services/test/Gridkit/MapServer/1",{
+    linklayer = new FeatureLayer("https://geo.rug.nl/arcgis/rest/services/World_Power/gridkitservice/MapServer/1",{
     outFields: ["*"]}
     );
-	verticelayer = new FeatureLayer("https://trr-08.id.rug.nl/arcgis/rest/services/test/Gridkit/MapServer/0",{outFields:["*"]});
+	verticelayer = new FeatureLayer("https://geo.rug.nl/arcgis/rest/services/World_Power/gridkitservice/MapServer/0",{outFields:["*"]});
 	var extent= new Extent(-376196.26571298274, 6104647.205685271, 1910799.620578883, 7295841.854481142, new SpatialReference({ wkid:102100 }));   
     map.setExtent(extent);
 	
@@ -155,6 +164,7 @@
 		});		
 	}
 	showInfo = function(links, vertices){
+		currentfeature = links.length===1?links[0]:vertices[0];
 		map.graphics.clear();
 		var info = document.getElementById("info");
 		while (info.firstChild) {
@@ -165,8 +175,16 @@
 		info.appendChild(h3);
 				
 		for(var i =0; i< vertices.length; i++){
+		 
 			var  graphic = new Graphic(vertices[i].toJson())
-			info.appendChild(templateLink(graphic));
+			var classs ="new";
+			if (vertices[i]===currentfeature){
+				classs ="current";
+			}
+			if (oldfeature  &&vertices[i].attributes.OBJECTID===oldfeature.attributes.OBJECTID ){
+				classs ="old";
+			}
+			info.appendChild(templateLink(graphic, classs));
 			graphic.symbol = new SimpleMarkerSymbol();
 			map.graphics.add(graphic);
 		}
@@ -175,33 +193,42 @@
 		info.appendChild(h3links);
 		for (var i=0;i<links.length;i++){
 			var graphic = new Graphic(links[i].toJson());
-			info.appendChild(templateVertice(graphic));
+			var classs ="new";
+			if (links[i]===currentfeature){
+				classs ="current";
+			}
+			if (oldfeature  &&links[i].attributes.OBJECTID===oldfeature.attributes.OBJECTID ){
+				classs ="old";
+			}
+			info.appendChild(templateVertice(graphic, classs));
 			graphic.symbol = new SimpleLineSymbol();
 			map.graphics.add(graphic);
 		}
 		info.className = "expandedinfo";
 		
 	}
-	templateLink = function(vertice){
+	templateLink = function(vertice, classs){
 		var div = document.createElement("div");
+		div.className = classs;
 		div.innerHTML =  "<span>VOLTAGE</span><span>"+vertice.attributes.VOLTAGE+"</span><br />"+
 		"<span>FREQUENCY</span><span>"+vertice.attributes.FREQUENCY+"</span><br />"+
 		"<span>NAME</span><span>"+vertice.attributes.NAME+"</span><br />"+
 		"<span>OPERATOR</span><span>"+vertice.attributes.OPERATOR+"</span><br /><br />";
 		on(div, "click", function(){
-			if(currentfeature ===vertice){ 
-				loadVertice(vertice);
+			if(selectedfeature ===vertice){ 
+				if (currentfeature){oldfeature = new Graphic(currentfeature.toJson());}
+				loadVertice(vertice, classs);
 			}
 			else{
 				highlightVertice(vertice);
-				currentfeature = vertice;
+				selectedfeature = vertice;
 			}
 		});
 		return div;
 	}
-	templateVertice = function(link){
+	templateVertice = function(link, classs){
 		var div = document.createElement("div");
-		
+		div.className = classs;		
 		div.innerHTML = "<span>VOLTAGE</span><span>"+link.attributes.VOLTAGE+"</span><br />"+
 		"<span>CABLES</span><span>"+link.attributes.CABLES+"</span><br />"+
 		"<span>WIRES</span><span>"+link.attributes.WIRES+"</span><br />"+
@@ -212,36 +239,37 @@
 		"<span>R_OHMKM</span><span>"+link.attributes.R_OHMKM+"</span><br />"+
 		"<span>X_OHMKM</span><span>"+link.attributes.X_OHMKM+"</span><br /><br />";
 		on(div, "click", function(){
-			if (currentfeature===link){
+			if (selectedfeature===link){
+				if (currentfeature){oldfeature = new Graphic(currentfeature.toJson());}
 				loadLink(link);
 			}
 			else{
 				higlightLink(link);
-				currentfeature= link;
+				selectedfeature= link;
 			}
 		});
 		return div;
 	}
 	
 	higlightLink = function(link){
-		resetcurrentFeature();
+		resetselectedfeature();
 		link.symbol.color = Color.fromHex("#FF6A00");
 		link.draw();
 	}
 	highlightVertice = function(vertice){
-		resetcurrentFeature();
+		resetselectedfeature();
 		vertice.symbol.outline.color = Color.fromHex("#FF6A00");
 		vertice.draw();
 	}
-	resetcurrentFeature = function(){
-		if(currentfeature){
-			if ( currentfeature.geometry.type ==="polyline"){
-				currentfeature.symbol = new SimpleLineSymbol();
+	resetselectedfeature = function(){
+		if(selectedfeature){
+			if ( selectedfeature.geometry.type ==="polyline"){
+				selectedfeature.symbol = new SimpleLineSymbol();
 			}
 			else{
-				currentfeature.symbol = new SimpleMarkerSymbol();
+				selectedfeature.symbol = new SimpleMarkerSymbol();
 			}
-			currentfeature.draw();
+			selectedfeature.draw();
 		}
 		
 	}
