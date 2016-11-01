@@ -260,10 +260,10 @@
 	templateLink = function(vertice, classs){
         var div = document.createElement("div");
 		div.className = classs;
-        div.innerHTML = "<label>VOLTAGE</label><span>" + vertice.attributes.VOLTAGE + "</span><br />" +
-            "<label>FREQUENCY</label><span>" + vertice.attributes.FREQUENCY + "</span><br />" +
-            "<label>NAME</label><span>" + vertice.attributes.NAME + "</span><br />" +
-            "<label>OPERATOR</label><span>" + vertice.attributes.OPERATOR + "</span><br /><br />";
+        div.innerHTML = "<label>Voltage</label><span>" + vertice.attributes.VOLTAGE + "</span><br />" +
+            "<label>Frequency</label><span>" + vertice.attributes.FREQUENCY + "</span><br />" +
+            "<label>Name</label><span>" + vertice.attributes.NAME + "</span><br />" +
+            "<label>Operator</label><span>" + vertice.attributes.OPERATOR + "</span><br /><br />";
         on(div, "click", function () {
 			if(selectedfeature ===vertice){ 
 				if (currentfeature){oldfeature = new Graphic(currentfeature.toJson());}
@@ -279,15 +279,13 @@
 	templateVertice = function(link, classs){
         var div = document.createElement("div");
 		div.className = classs;		
-        div.innerHTML = "<label>VOLTAGE</label><span>" + link.attributes.VOLTAGE + "</span><br />" +
-            "<label>CABLES</label><span>" + link.attributes.CABLES + "</span><br />" +
-            "<label>WIRES</label><span>" + link.attributes.WIRES + "</span><br />" +
-            "<label>FREQUENCY</label><span>" + link.attributes.FREQUENCY + "</span><br />" +
-            "<label>NAME</label><span>" + link.attributes.NAME + "</span><br />" +
-            "<label>OPERATOR</label><span>" + link.attributes.OPERATOR + "</span><br />" +
-            "<label>LENGTH_M</label><span>" + link.attributes.LENGTH_M + "</span><br />" +
-            "<label>R_OHMKM</label><span>" + link.attributes.R_OHMKM + "</span><br />" +
-            "<label>X_OHMKM</label><span>" + link.attributes.X_OHMKM + "</span><br /><br />";
+        div.innerHTML = "<label>Voltage</label><span>" + link.attributes.VOLTAGE + "</span><br />" +
+            "<label>Cables</label><span>" + link.attributes.CABLES + "</span><br />" +
+            "<label>Wires</label><span>" + link.attributes.WIRES + "</span><br />" +
+            "<label>Frequency</label><span>" + link.attributes.FREQUENCY + "</span><br />" +
+            "<label>Name</label><span>" + link.attributes.NAME + "</span><br />" +
+            "<label>Operator</label><span>" + link.attributes.OPERATOR + "</span><br />" +
+            "<label>Length</label><span>" + link.attributes.LENGTH_M + "</span><br />" <br />";
         on(div, "click", function () {
 			if (selectedfeature===link){
 				if (currentfeature){oldfeature = new Graphic(currentfeature.toJson());}
