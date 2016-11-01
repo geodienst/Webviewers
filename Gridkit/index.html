@@ -278,14 +278,16 @@
       }
 	templateVertice = function(link, classs){
         var div = document.createElement("div");
-		div.className = classs;		
+		div.className = classs;	
+		length = ""+link.attributes.LENGTH_M;
+		length = length.indexOf(".")>0? length.split(".")[0]: length;
         div.innerHTML = "<label>Voltage</label><span>" + link.attributes.VOLTAGE + "</span><br />" +
             "<label>Cables</label><span>" + link.attributes.CABLES + "</span><br />" +
             "<label>Wires</label><span>" + link.attributes.WIRES + "</span><br />" +
             "<label>Frequency</label><span>" + link.attributes.FREQUENCY + "</span><br />" +
             "<label>Name</label><span>" + link.attributes.NAME + "</span><br />" +
             "<label>Operator</label><span>" + link.attributes.OPERATOR + "</span><br />" +
-            "<label>Length</label><span>" + link.attributes.LENGTH_M + "</span><br />" <br />";
+            "<label>Length</label><span>" + length+ "</span><br /> <br />";
         on(div, "click", function () {
 			if (selectedfeature===link){
 				if (currentfeature){oldfeature = new Graphic(currentfeature.toJson());}
