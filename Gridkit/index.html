@@ -347,12 +347,14 @@
 
       higlightLink = function (link) {
         resetselectedfeature();
-        link.symbol.color = Color.fromHex("#ff007e");
+        link.symbol.color = Color.fromHex("#ffffff");
+        link.symbol.setWidth(3);
         link.draw();
       }
       highlightVertice = function (vertice) {
         resetselectedfeature();
-        vertice.symbol.outline.color = Color.fromHex("#ff007e");
+        vertice.symbol.outline.color = Color.fromHex("#ffffff");
+        vertice.symbol.outline.setWidth(3);
         vertice.draw();
       }
       resetselectedfeature = function () {
