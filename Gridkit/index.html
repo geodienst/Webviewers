@@ -221,6 +221,7 @@
       map.on("click", function(evt) {
         document.getElementById("info").className = "collapsedinfo";
         document.getElementById("info").innerHTML = "";
+        map.graphics.clear();
       })
 
       verticelayer.on("click", function (evt) {
