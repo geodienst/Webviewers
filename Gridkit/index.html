@@ -6,6 +6,13 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Gridkit open energy network</title>
   <link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
+  <script src="https://js.arcgis.com/3.14/"></script>
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <link rel="stylesheet" type="text/css" href="jquery.jscrollpane.css">
+  <script src="jquery.mousewheel.js"></script>
+  <script src="jquery.jscrollpane.js"></script>
+
   <style>
     html, body {
       padding: 0;
@@ -15,113 +22,146 @@
       font-size: 11px;
       color: #fff;
     }
+  h3 {
+    padding-left: 5px;
+  }
 
-	.new{
-		background-color:#FF0000;
-		cursor: pointer;
+  .new, .current, .old {
+    cursor: pointer;
+    position: relative;
+    padding: 5px;
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+  .current {
+    background: linear-gradient(90deg, #333, #000);
+  }
+  .old {
+    background: linear-gradient(90deg, #1c1c1c, #000);
+  }
+  .current:after, .old:after {
+    font-weight: bold;
+    font-style: italic;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 0 5px 3px 0;
+  }
+	.current:after{
+    content: "Current selection";
+    color: #555;
 	}
-	.current{
-		background-color:#00FF00;
-		cursor: pointer;
+	.old:after{
+    content: "Previous selection ";
+    color: #444;
 	}
-	.old{
-		background-color:#0000FF;
-		cursor: pointer;
-	}
-    #map {
-      position: absolute;
-      left: 0px;
-      right: 0px;
-      top: 0px;
-      bottom: 0px;
-    }
+  #map {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+  }
 
-    #info {
-      position: absolute;
-      left: 0px;
-      top: 90px;
-      bottom: 25px;
-      background-color: #000000;
-    }
+  #info {
+    position: absolute;
+    left: 0px;
+    top: 90px;
+    bottom: 25px;
+    background-color: #000000;
+    overflow: auto;
+    height: calc(100% - 115px);
+    overflow: hidden;
+    /*overflow-y: auto;*/
 
-    .header {
-      position: absolute;
-      top: 0;
-      text-align: center;
-      height: 90px;
-      width: 100%;
-      background: #000;
-    }
+  }
+  .jspVerticalBar {
+    left: 0;
+  }
 
-    .expandedinfo {
-      width: 300px;
-    }
+  .header {
+    position: absolute;
+    top: 0;
+    text-align: center;
+    height: 90px;
+    width: 100%;
+    background: #000;
+  }
 
-    .collapsedinfo {
-      width: 50px;
-    }
+  .expandedinfo {
+    width: 300px;
+  }
 
-    #map .logo-med {
-      width: 70px;
-      height: 70px;
-    }
+  .collapsedinfo {
+    width: 50px;
+  }
 
-    #map .logo-sm {
-      /*background-image: url('http://geodienst.webhosting.rug.nl/img/odp/supersmallesrigeologo.png') !important;  */
-      height: 19px;
-      width: 22px;
-      background-repeat: no-repeat;
-    }
+  #map .logo-med {
+    width: 70px;
+    height: 70px;
+  }
 
-    #chart {
-      position: absolute;
-      left: 0px;
-      right: 0px;
-      bottom: 0px;
-      height: 200px;
-      background-color: #2a2a2b;
-    }
-	
+  #map .logo-sm {
+    /*background-image: url('http://geodienst.webhosting.rug.nl/img/odp/supersmallesrigeologo.png') !important;  */
+    height: 19px;
+    width: 22px;
+    background-repeat: no-repeat;
+  }
 
-    .esriSimpleSliderTL {
-      top: auto;
-      left: auto;
-      bottom: 45px;
-      right: 20px;
-    }
+  #chart {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    height: 200px;
+    background-color: #2a2a2b;
+  }
 
-    .esriControlsBR {
-      width: 100%;
-      background: #000;
-      padding: 5px;
-      margin: 0;
-      right: 0;
-      bottom: 0;
-      text-align: center;
-    }
 
-    .logo-med, .logo-sm {
-      display: none !important;
-    }
+  .esriSimpleSliderTL {
+    top: auto;
+    left: auto;
+    bottom: 45px;
+    right: 20px;
+  }
 
-    .esriAttribution {
-      background: none;
-    }
+  .esriControlsBR {
+    width: 100%;
+    background: #000;
+    padding: 5px;
+    margin: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+  }
 
-    .collapsedinfo, .expandedinfo, .esriControlsBR, .header {
-      opacity: 0.8;
-    }
+  .logo-med, .logo-sm {
+    display: none !important;
+  }
 
-    label {
-      padding: 5px;
-    }
+  .esriAttribution {
+    background: none;
+  }
+
+  .collapsedinfo, .expandedinfo, .esriControlsBR, .header {
+    opacity: 0.85;
+  }
+
+  label {
+    font-weight: bold;
+    padding-right: 5px;
+  }
+  label:after {
+    content: ":";
+  }
+  .geologo {
+    right: 0;
+    padding: 10px;
+    top: 0;
+    position: absolute;
+  }
 
   </style>
-
-  <link rel="stylesheet" type="text/css" href="gridkit.css">
-  <script src="//js.arcgis.com/3.14/"></script>
-  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-  <script src="https://code.highcharts.com/highcharts.js"></script>
   <script type="text/javascript">
 
     var map, graphic, linklayer,verticelayer, selectedfeature, oldfeature, currentfeature;
@@ -335,6 +375,7 @@
 <div id="header" class="header">
   <h1>PowerGrid</h1>
   <span>Click on a line or point to see the data from the powerline or generator. <br>You can click on the results on the left to thumb through the data!</span>
+  <div class="geologo"><a href="http://www.rug.nl/geo"><img src="http://geodienst.webhosting.rug.nl/img/odp/geodienst_color3_70.png" /></a></div>
 </div>
 
 </body>
