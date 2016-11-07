@@ -218,8 +218,14 @@
       map.addLayer(linklayer);
       map.addLayer(verticelayer);
 
+      map.on("click", function(evt) {
+        document.getElementById("info").className = "collapsedinfo";
+        document.getElementById("info").innerHTML = "";
+      })
+
       verticelayer.on("click", function (evt) {
         loadVertice(evt.graphic);
+        evt.stopPropagation();
       });
       loadVertice = function (feature) {
         var attr = feature.attributes;
@@ -237,6 +243,7 @@
 
       linklayer.on("click", function (evt) {
         loadLink(evt.graphic);
+        evt.stopPropagation();
       });
       loadLink = function (feature) {
         var attr = feature.attributes;
