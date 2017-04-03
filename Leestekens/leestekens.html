@@ -62,7 +62,6 @@
     border-top-right-radius:4px;
     border-top-left-radius:4px;
 }
-
 .claro .dijitTitlePaneTitle {
     padding: 12px 15px;
     min-height: 17px;
@@ -127,8 +126,11 @@ img.esriBasemapGalleryThumbnail {
     
    webmapId = "0301f4150b394c6a8f05896efa53cb2f";
     var leesteken =leesteken;
+    
     require([
+    "esri/config",
       "esri/map",
+      "esri/layers/FeatureLayer",
       "esri/tasks/GeometryService",
       "esri/arcgis/utils",
       "esri/dijit/Geocoder",
@@ -142,10 +144,12 @@ img.esriBasemapGalleryThumbnail {
         "esri/tasks/locator", "esri/graphic", "esri/lang","esri/geometry/Extent",
       "esri/geometry/webMercatorUtils",
       "dojo/domReady!"
-    ], function (Map, GeometryService,arcgisUtils, Geocoder,Button,LocateButton,
+    ], function (esriConfig,Map,FeatureLayer, GeometryService,arcgisUtils, Geocoder,Button,LocateButton,
         BasemapLayer, Basemap,BasemapGallery,
       Locator, Graphic,esriLang, Extent,
         webMercatorUtils) {
+        esriConfig.defaults.io.corsEnabledServers.push("geo.rug.nl");
+        esriConfig.defaults.io.corsEnabledServers.push("geo-test.rug.nl");
       arcgisUtils.createMap(webmapId, "mapDiv", {
         mapOptions: {               
           minZoom: 3,
@@ -155,13 +159,14 @@ img.esriBasemapGalleryThumbnail {
     }).then(function (response){
       esriConfig.defaults.geometryService = new GeometryService("https://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
       map = response.map;
-	  var subscriptions=[];
+    var subscriptions=[];
       for (var i = 0; i< map.graphicsLayerIds.length; i++){
-        var layer = map.getLayer(map.graphicsLayerIds[i]);
-		layer.setDefinitionExpression("NAAM  = '"+leesteken+"'");
-			layer.setVisibility(true);
-		//layer.setVisibility(false);
-		//setLayerDefinition(layer);
+        var layer = map.getLayer(map.graphicsLayerIds[i]);            
+        console.log(FeatureLayer.MODE_SNAPSHOT ===layer.mode)
+        layer.setDefinitionExpression("NAAM  = '"+leesteken+"'");
+        layer.setVisibility(true);
+    //layer.setVisibility(false);
+    //setLayerDefinition(layer);
       }
       map.setExtent(map.extent);
       
@@ -195,16 +200,7 @@ img.esriBasemapGalleryThumbnail {
     
        
     });
-	/*
-	function setLayerDefinition(layer){
-		
-		var subscription = layer.on("update-end", function(){			
-			subscription.remove();
-			layer.setDefinitionExpression("NAAM  = '"+leesteken+"'");
-			layer.setVisibility(true);
-			layer.refresh();
-		});
-	}*/
+  
   }
   init("Hoogstamboomgaard");
   </script>
