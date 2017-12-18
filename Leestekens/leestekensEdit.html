@@ -54,7 +54,7 @@
       position: absolute;
       top: 95px;
       left: 20px;
-      z-index: 50;
+      z-index: 39;
     }
   .saveButton{
     float:right;
@@ -242,6 +242,10 @@ img.esriBasemapGalleryThumbnail {
     var baselayerBonne = new BasemapLayer({url:"https://geo.rug.nl/arcgis/rest/services/HistorischeKaarten/Bonnebladen/ImageServer"});
     var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/bonnebladen.png"});
     basemapGallery.add(basemapBonne);
+
+    var baselayerAHN = new BasemapLayer({url:"https://ahn.arcgisonline.nl/arcgis/rest/services/Hoogtebestand/AHN2_r_cache/MapServer"});
+    var basemapAHN = new Basemap({layers:[baselayerAHN],title:"Hoogtekaart",thumbnailUrl:"images/ahn.png"});
+    basemapGallery.add(basemapAHN);
     
     
     var definitionQueryEditLayer = "NAAM  = '"+leesteken+"' AND NAAMTOEVOEGER ='"+username+"'";
@@ -351,10 +355,10 @@ img.esriBasemapGalleryThumbnail {
       <div id="LocateButton"></div>
     <div id="templateDiv" ></div>
     </div>
-    <div style="position:absolute; right:15px; top:130px; z-Index:999;">
+    <div style="position:absolute; right:15px; top:130px; z-Index:39;">
         <div data-dojo-type="dijit/TitlePane" 
              data-dojo-props="title:'Achtergrondkaart', closable:false, open:false">
-          <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:120px; overflow:auto;">
+          <div data-dojo-type="dijit/layout/ContentPane" style="width:260px; height:240px; overflow:auto;">
             <div id="basemapGallery"></div>
           </div>
         </div>
