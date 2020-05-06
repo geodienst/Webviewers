@@ -26,7 +26,7 @@
       position: absolute;
       top: 95px;
       left: 20px;
-      z-index: 39;
+      z-index: 50;
     }    
       h1, h2, h3, h4, h5 {
         font-weight:700;
@@ -149,7 +149,7 @@ img.esriBasemapGalleryThumbnail {
       Locator, Graphic,esriLang, Extent,
         webMercatorUtils) {
         esriConfig.defaults.io.corsEnabledServers.push("geo.rug.nl");
-        esriConfig.defaults.io.corsEnabledServers.push("geo-test.rug.nl");
+        esriConfig.defaults.io.corsEnabledServers.push("geo.rug.nl");
       arcgisUtils.createMap(webmapId, "mapDiv", {
         mapOptions: {               
           minZoom: 3,
@@ -186,27 +186,24 @@ img.esriBasemapGalleryThumbnail {
         console.log("basemap gallery error:  ", msg);
         });
           var baselayerOpenTopo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Open_Topo/MapServer"});
-      var basemapOpenTopo = new Basemap({layers:[baselayerOpenTopo],title:"Kaart",thumbnailUrl:"images/opentopo.png"});
+      var basemapOpenTopo = new Basemap({layers:[baselayerOpenTopo],title:"Kaart",thumbnailUrl:"images/opentopo2.png"});
       basemapGallery.add(basemapOpenTopo);
       
       var baselayerLufo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Luchtfoto/Luchtfoto/MapServer"});
       var basemapLufo = new Basemap({layers:[baselayerLufo],title:"Luchtfoto",thumbnailUrl:"images/luchtfoto.png"});
       basemapGallery.add(basemapLufo);
       
-      var baselayerBonne = new BasemapLayer({url:"https://geo.rug.nl/arcgis/rest/services/HistorischeKaarten/Bonnebladen/ImageServer"});
+      
+      var baselayerBonne = new BasemapLayer({url:"https://geo.rug.nl/image/rest/services/HistorischeKaarten/Bonnebladen/ImageServer"});
       var basemapBonne = new Basemap({layers:[baselayerBonne],title:"Bonnebladen",thumbnailUrl:"images/bonnebladen.png"});
       basemapGallery.add(basemapBonne);
-
-      var baselayerAHN = new BasemapLayer({url:"https://ahn.arcgisonline.nl/arcgis/rest/services/Hoogtebestand/AHN2_r_cache/MapServer"});
-      var basemapAHN = new Basemap({layers:[baselayerAHN],title:"Hoogtekaart",thumbnailUrl:"images/ahn.png"});
-      basemapGallery.add(basemapAHN);
       });
     
        
     });
   
   }
-  init("Hoogstamboomgaard");
+  init("Bakhuisje");
   </script>
   </head>
 
@@ -215,10 +212,10 @@ img.esriBasemapGalleryThumbnail {
           <div id="mapDiv" data-dojo-type="dijit/layout/ContentPane"
                data-dojo-props="region:'center'">
       <div id="LocateButton"></div>
-      <div style="position:absolute; right:15px; top:15px; z-Index:39;">
+      <div style="position:absolute; right:15px; top:15px; z-Index:999;">
       <div data-dojo-type="dijit/TitlePane" 
          data-dojo-props="title:'Achtergrondkaart', closable:false, open:false">
-        <div data-dojo-type="dijit/layout/ContentPane" style="width:260px; height:240px; overflow:auto;">
+        <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:120px; overflow:auto;">
         <div id="basemapGallery"></div>
         </div>
       </div>
@@ -227,4 +224,4 @@ img.esriBasemapGalleryThumbnail {
                    
       </div>
   </body>
-  </html>
+</html>
