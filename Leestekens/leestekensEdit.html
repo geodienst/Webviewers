@@ -229,11 +229,11 @@ img.esriBasemapGalleryThumbnail {
       console.log("basemap gallery error:  ", msg);
     });
     
-    var baselayerOpenTopo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Open_Topo/MapServer/"});
-    var basemapOpenTopo = new Basemap({layers:[baselayerOpenTopo],title:"Kaart",thumbnailUrl:"images/opentopo.png"});
-    basemapGallery.add(basemapOpenTopo);
-    var layerOpenTopo = new ArcGISTiledMapServiceLayer("https://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Open_Topo/MapServer/");
-    map.addLayer(layerOpenTopo);
+    var baselayerTopo = new BasemapLayer({url:"https://services.arcgisonline.nl/ArcGIS/rest/services/Basiskaarten/Topo/MapServer"});
+    var basemapTopo = new Basemap({layers:[baselayerTopo],title:"Kaart",thumbnailUrl:"images/opentopo.png"});
+    basemapGallery.add(basemapTopo);
+    var layerTopo = new ArcGISTiledMapServiceLayer("https://services.arcgisonline.nl/ArcGIS/rest/services/Basiskaarten/Topo/MapServer");
+    map.addLayer(layerTopo);
     
     var baselayerLufo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Luchtfoto/Luchtfoto/MapServer"});
     var basemapLufo = new Basemap({layers:[baselayerLufo],title:"Luchtfoto",thumbnailUrl:"images/luchtfoto.png"});
@@ -294,7 +294,7 @@ img.esriBasemapGalleryThumbnail {
       for (var i = 0; i< evt.layers.length;i++){
         if (evt.layers[i].layer.declaredClass ==="esri.layers.FeatureLayer"){templateLayers.push(evt.layers[i].layer);}
       } 
-      map.setExtent(layerOpenTopo.fullExtent)
+      map.setExtent(layerTopo.fullExtent)
           var templatePicker = new TemplatePicker({
             featureLayers: templateLayers,
             rows: "auto",

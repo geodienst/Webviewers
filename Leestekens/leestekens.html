@@ -185,10 +185,11 @@ img.esriBasemapGalleryThumbnail {
         basemapGallery.on("error", function(msg) {
         console.log("basemap gallery error:  ", msg);
         });
-          var baselayerOpenTopo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Open_Topo/MapServer"});
-      var basemapOpenTopo = new Basemap({layers:[baselayerOpenTopo],title:"Kaart",thumbnailUrl:"images/opentopo2.png"});
-      basemapGallery.add(basemapOpenTopo);
       
+      var baselayerTopo = new BasemapLayer({url:"https://services.arcgisonline.nl/ArcGIS/rest/services/Basiskaarten/Topo/MapServer"});
+      var basemapTopo = new Basemap({layers:[baselayerTopo],title:"Kaart",thumbnailUrl:"images/opentopo.png"});
+      basemapGallery.add(basemapTopo);
+
       var baselayerLufo = new BasemapLayer({url:"https://services.arcgisonline.nl/arcgis/rest/services/Luchtfoto/Luchtfoto/MapServer"});
       var basemapLufo = new Basemap({layers:[baselayerLufo],title:"Luchtfoto",thumbnailUrl:"images/luchtfoto.png"});
       basemapGallery.add(basemapLufo);
