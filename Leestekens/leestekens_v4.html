@@ -1,0 +1,197 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Leestekens v4</title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.29/@arcgis/core/assets/esri/themes/light/main.css">
+
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Roboto+Slab:400,700);
+
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+        }
+
+        calcite-button[title=Achtergrondkaart],
+        calcite-button[title=Achtergrondkaart]:hover,
+        calcite-button[title=Inklappen],
+        calcite-button[title=Inklappen]:hover {
+            width: 183px;
+            height: 52px;
+            padding: 12px 15px;
+            min-height: 17px;
+            font-size: 16px;
+            font-family: "Roboto Slab", sans-serif;
+            font-weight: 700;
+            color: #fff;
+            background-color: #1e8066;
+            border: 1px solid #cecece;
+            background-image: none;
+            box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.1);
+            -o-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.1);
+            -webkit-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.1);
+            -moz-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.1);
+
+            .esri-icon-basemap,
+            .esri-collapse__icon {
+                display: none;
+            }
+        }
+
+        /* button.button-padding {
+            display: none;
+        } */
+
+        calcite-button[title=Achtergrondkaart]:before,
+        calcite-button[title=Inklappen]:before {
+            content: "Achtergrondkaart";
+        }
+
+        /* div[title=Achtergrondkaart] calcite-icon {
+            background-image: url('https://www.leestekensvanhetlandschap.nl/layout/main/images/Logo-RUG.png');
+            background-repeat: no-repeat;
+            background-size: 20px;
+            background-position: center;
+        } */
+
+        /* div[title='Achtergrondkaart'] {
+            width: 162px;
+            height: 132px;
+
+            .esri-collapse__icon {
+                display: none;
+            }
+
+            .esri-icon-font-fallback-text {
+                width: auto;
+                height: 13px;
+                clip: auto;
+                font-size: 12px;
+                font-family: arial !important;
+            }
+        } */
+    </style>
+
+    <script src="https://js.arcgis.com/4.29/"></script>
+    <script>
+        require([
+            "esri/Map",
+            "esri/WebMap",
+            "esri/Graphic",
+            "esri/views/MapView",
+            "esri/widgets/Search",
+            "esri/Basemap",
+            "esri/layers/TileLayer",
+            "esri/layers/ImageryLayer",
+            "esri/widgets/Home",
+            "esri/widgets/BasemapGallery",
+            "esri/widgets/Locate",
+            "esri/widgets/ScaleBar",
+            "esri/widgets/LayerList",
+            "esri/widgets/Legend",
+            "esri/widgets/Expand",
+            "esri/widgets/Compass"
+        ],
+            (
+                Map,
+                WebMap,
+                Graphic,
+                MapView,
+                Search,
+                Basemap,
+                TileLayer,
+                ImageryLayer,
+                Home,
+                BasemapGallery,
+                Locate,
+                ScaleBar, LayerList, Legend, Expand, Compass
+            ) => {
+
+                const basemapLayer = new TileLayer({ url: "https://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Topo/MapServer" });
+                const basemapTopo = new Basemap({
+                    baseLayers: [basemapLayer],
+                    title: "Topo RD",
+                    id: "topord",
+                    thumbnailUrl: "images/topord.png"
+                });
+
+                const baselayerLufo = new TileLayer({ url: "https://services.arcgisonline.nl/arcgis/rest/services/Luchtfoto/Luchtfoto/MapServer" });
+                const basemapLufo = new Basemap({
+                    baseLayers: [baselayerLufo],
+                    title: "Luchtfoto",
+                    thumbnailUrl: "images/luchtfoto.png"
+                });
+
+                const baselayerBonne = new ImageryLayer({ url: "https://geo.rug.nl/image/rest/services/HistorischeKaarten/Bonnebladen/ImageServer" });
+                const basemapBonne = new Basemap({
+                    baseLayers: [baselayerBonne],
+                    title: "Bonnebladen",
+                    thumbnailUrl: "images/bonnebladen.png"
+                });
+
+                const webmap = new WebMap({
+                    portalItem: {
+                        id: "0301f4150b394c6a8f05896efa53cb2f"
+                    }
+                });
+
+                const view = new MapView({
+                    map: webmap,
+                    container: "viewDiv",
+                    zoom: 3,
+                    center: {
+                        x: 120000,
+                        y: 450000,
+                        spatialReference: 28992
+                    }
+                });
+
+                const basemapGallery = new BasemapGallery({
+                    view: view,
+                    source: [basemapTopo, basemapLufo, basemapBonne]
+                });
+                const basemapGalleryExpand = new Expand({
+                    view: view,
+                    content: basemapGallery,
+                    expanded: false,
+                    expandTooltip: "Achtergrondkaart"
+                });
+
+                let locateWidget = new Locate({
+                    view: view
+                });
+
+                view.ui.add(locateWidget, "top-left");
+                view.ui.add(basemapGalleryExpand, "top-right");
+
+                view.when(function () {
+
+                    const leesteken = 'Arboretum';
+
+                    view.map.layers.forEach((layer) => {
+                        layer.definitionExpression = "NAAM  = '" + leesteken + "'"
+                        layer.visible = true;
+                        layer.when(() => {
+                            return layer.queryExtent();
+                        }).then((response) => {
+                            if (response.extent) {
+                                view.goTo(response.extent);
+                            }
+                        });
+                    });
+                })
+            });
+    </script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+</body>
+
+</html>
