@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>Leestekens view v4</title>
+    <title>Leestekens edit v4</title>
 
-    <link rel="stylesheet" href="https://js.arcgis.com/4.29/@arcgis/core/assets/esri/themes/light/main.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.30/@arcgis/core/assets/esri/themes/light/main.css">
 
     <style>
         @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Roboto+Slab:400,700);
@@ -50,40 +50,52 @@
         }
     </style>
 
-    <script src="https://js.arcgis.com/4.29/"></script>
+    <script src="https://js.arcgis.com/4.30/"></script>
     <script>
         require([
             "esri/Map",
-            "esri/WebMap",
-            "esri/Graphic",
-            "esri/views/MapView",
-            "esri/widgets/Search",
             "esri/Basemap",
+            "esri/views/MapView",
             "esri/layers/TileLayer",
             "esri/layers/ImageryLayer",
-            "esri/widgets/Home",
+            "esri/layers/MapImageLayer",
+            "esri/layers/FeatureLayer",
+            "esri/widgets/Editor",
             "esri/widgets/BasemapGallery",
             "esri/widgets/Locate",
-            "esri/widgets/ScaleBar",
-            "esri/widgets/LayerList",
-            "esri/widgets/Legend",
             "esri/widgets/Expand",
-            "esri/widgets/Compass"
+            "esri/identity/IdentityManager"
         ],
             (
                 Map,
-                WebMap,
-                Graphic,
-                MapView,
-                Search,
                 Basemap,
+                MapView,
                 TileLayer,
                 ImageryLayer,
-                Home,
+                MapImageLayer,
+                FeatureLayer,
+                Editor,
                 BasemapGallery,
                 Locate,
-                ScaleBar, LayerList, Legend, Expand, Compass
+                Expand,
+                identityManager
             ) => {
+
+                const leesteken = "Jeneverbesstruweel";     //"Brinken", "Jeneverbesstruweel", "Tuunwal"
+                const gebruiker = "obrin";                  //"mark", "obrin"
+                const editType = "Polygon";                 // "Point", "Line", "Polygon"
+
+                const portalUrl = 'https://geo.rug.nl/portal';
+                const server = portalUrl + '/sharing/rest';
+
+                //deze token werkt alleen lokaal bij mij
+                //vervang deze door je eigen token, of implementeer een mechanisme om tokens op te halen
+                const token = "ocMBHCz7McuTMydqexR9nopSjwQ7BOiD02NAYrbl-ia4reAKbGDJgr1OTaQz4fh8MgnARmgZMW9DRhx0GHqfuIXgeQJnX1Le79Dse1LLPKjdVkhwNyaq9_Yhr1yC36vxBjxdyyNkwSqIyHhpcFEIz2lxRWvqLSUjlCc9NLLxqGte_8_qVJiKAvxMhXOVM9xt";
+    
+                identityManager.registerToken({
+                    'server': server,
+                    'token': token
+                });
 
                 const basemapLayer = new TileLayer({ url: "https://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Topo/MapServer" });
                 const basemapTopo = new Basemap({
@@ -107,14 +119,46 @@
                     thumbnailUrl: "images/bonnebladen.png"
                 });
 
-                const webmap = new WebMap({
-                    portalItem: {
-                        id: "0301f4150b394c6a8f05896efa53cb2f"
-                    }
+                const map = new Map({
+                    basemap: basemapTopo
                 });
 
+
+                const definitionQueryEditLayer = "NAAM='" + leesteken + "' AND NAAMTOEVOEGER='" + gebruiker + "'";    // edit alleen op je eigen features
+                const definitionQueryViewLayer = "NAAM='" + leesteken + "' AND NAAMTOEVOEGER<>'" + gebruiker + "'";   // view alleen die van anderen
+
+                const layerId = (editType === "Polygon") ? 2 : (editType === "Line") ? 1 : (editType === "Point") ? 0 : null;
+                const editLayer = new FeatureLayer({
+                    url: "https://geo.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschap_edit/FeatureServer/" + layerId,
+                    definitionExpression: definitionQueryEditLayer,
+                    outFields: ['*']
+                });
+
+                const viewLayer = new MapImageLayer({
+                    url: "https://geo.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschapview/MapServer",
+                    sublayers: [
+                        {
+                            id: 0,
+                            visible: (layerId == 0),
+                            definitionExpression: definitionQueryViewLayer
+                        },
+                        {
+                            id: 1,
+                            visible: (layerId == 1),
+                            definitionExpression: definitionQueryViewLayer
+                        },
+                        {
+                            id: 2,
+                            visible: (layerId == 2),
+                            definitionExpression: definitionQueryViewLayer
+                        }
+                    ]
+                });
+
+                map.addMany([editLayer]); //viewLayer
+
                 const view = new MapView({
-                    map: webmap,
+                    map: map,
                     container: "viewDiv",
                     zoom: 3,
                     center: {
@@ -140,24 +184,19 @@
                 });
 
                 view.ui.add(locateWidget, "top-left");
+                
+
+                const editor = new Editor({
+                    view: view
+                });
+
+                editor.visibleElements = {
+                    settingsMenu: false, // geen instellingen tonen
+                    editFeaturesSection: false, // bestaande features niet bewerken
+                };
+
+                view.ui.add(editor, "top-right");
                 view.ui.add(basemapGalleryExpand, "top-right");
-
-                view.when(function () {
-
-                    const leesteken = 'Arboretum';
-
-                    view.map.layers.forEach((layer) => {
-                        layer.definitionExpression = "NAAM  = '" + leesteken + "'"
-                        layer.visible = true;
-                        layer.when(() => {
-                            return layer.queryExtent();
-                        }).then((response) => {
-                            if (response.extent) {
-                                view.goTo(response.extent);
-                            }
-                        });
-                    });
-                })
             });
     </script>
 </head>
