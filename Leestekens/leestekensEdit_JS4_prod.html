@@ -1,0 +1,507 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Leestekens edit v4</title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.30/@arcgis/core/assets/esri/themes/light/main.css">
+
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700|Roboto+Slab:400,700);
+
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+        }
+
+        calcite-button[title=Achtergrondkaart],
+        calcite-button[title=Achtergrondkaart]:hover,
+        calcite-button[title=Inklappen],
+        calcite-button[title=Inklappen]:hover{
+		    width: 170px;
+            height: 24px;
+            padding: 15px 15px;
+            min-height: 17px;
+            font-size: 16px;
+            font-family: "Roboto Slab", sans-serif;
+            font-weight: 700;
+            color: #fff;
+            background-color: #1e8066;
+            border: 1px solid #cecece;
+            background-image: none;
+            box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
+            .esri-collapse__icon {
+                display: none;
+            },
+        }
+
+        calcite-button[title=Achtergrondkaart]:before {
+		    content: "Achtergrondskaart";
+			disabled: true;
+        }
+        calcite-button[title=Inklappen]:before {
+            content: "Inklappen";
+			disabled: true;
+        }
+	    #templateDiv {
+            right: 15px;
+            top: 15px;
+            height: auto;
+            width: auto;
+            position: absolute;
+			overflow:hidden;
+            z-index: 50;
+			border-width:1px;
+			border-color:#000000;
+			background-color: #FFFFFFF;
+            border-radius: 5px;
+            padding: 2px;
+        }
+		#basemapGalleryDiv {
+            position: absolute;
+            right: 10px;
+            bottom: 15px;
+            z-index: 39;
+            background-color: white;
+            border-radius: 0px;
+            padding: 0px;
+            width: 175px;
+        }
+    </style>
+
+  
+    <script src="https://js.arcgis.com/4.30/"></script>
+    
+	<script>
+        require([
+            "esri/Map",
+            "esri/Basemap",
+            "esri/views/MapView",
+            "esri/layers/TileLayer",
+            "esri/layers/ImageryLayer",
+            "esri/layers/MapImageLayer",
+            "esri/layers/FeatureLayer",
+            "esri/widgets/Editor",
+			"esri/form/FormTemplate",
+			"esri/form/elements/GroupElement",
+			"esri/form/elements/FieldElement",
+            "esri/widgets/BasemapGallery",
+            "esri/widgets/Locate",
+            "esri/widgets/Expand",
+            "esri/identity/IdentityManager"
+        ],
+            (
+                Map,
+                Basemap,
+                MapView,
+                TileLayer,
+                ImageryLayer,
+                MapImageLayer,
+                FeatureLayer,
+                Editor,
+				FormTemplate,
+				GroupElement,
+				FieldElement,
+                BasemapGallery,
+                Locate,
+                Expand,
+                identityManager
+
+            ) => {
+				//================================================
+				// TESTVALUES start
+				// testwaarden voor initiele test
+				//================================================
+				
+                var leesteken = "Vistrap";     //"Brinken", "Jeneverbesstruweel", "Tuunwal"
+                var gebruiker = "obrin";                  //"mark", "obrin"
+                var editType = "Point";                 // "Point", "Line", "Polygon"
+
+                const portalUrl = 'https://geo.rug.nl/portal';
+                const server = portalUrl + '/sharing/rest';
+
+                //vervang deze door je eigen token, of implementeer een mechanisme om tokens op te halen
+                const token = "eTnl3tKismEC4Ec0OWn7HnsMsFu4ixCXZP_AYME41MbKyaM2Y4P0BcwACjl07l6oJ_C84o4q2mgaUle2uE01i-UEzUyo8UOgOgdoSjuqtdhR7OciXLXSjLmGIz7SJ2FbpvDE1s0-bQrtSGkZyYgVvdZh9IUHgUBA4Dcr6nrjsXc.";
+ 
+				//================================================
+				// TESTVALUES end				
+				//================================================
+
+				//================================================
+				// identifymanager config start				
+				//================================================				
+                identityManager.registerToken({
+                    'server': server,
+                    'token': token
+                });
+				
+				//================================================
+				// identifymanager config end				
+				//================================================
+				
+				//================================================
+				// SETUP BASEMAPGALERY achter knop 1 - start 
+				// set up van verschillende basemaps
+				//================================================	
+                const basemapLayer = new TileLayer({ url: "https://services.arcgisonline.nl/arcgis/rest/services/Basiskaarten/Topo/MapServer" });
+                const basemapTopo = new Basemap({
+                    baseLayers: [basemapLayer],
+                    title: "Topo RD",
+                    id: "topord",
+                    thumbnailUrl: "images/topord.png"
+                });
+
+                const baselayerLufo = new TileLayer({ url: "https://services.arcgisonline.nl/arcgis/rest/services/Luchtfoto/Luchtfoto/MapServer" });
+                const basemapLufo = new Basemap({
+                    baseLayers: [baselayerLufo],
+                    title: "Luchtfoto",
+                    thumbnailUrl: "images/luchtfoto.png"
+                });
+
+                const baselayerBonne = new ImageryLayer({ url: "https://geo.rug.nl/image/rest/services/HistorischeKaarten/Bonnebladen/ImageServer" });
+                const basemapBonne = new Basemap({
+                    baseLayers: [baselayerBonne],
+                    title: "Bonnebladen",
+                    thumbnailUrl: "images/bonnebladen.png"
+                });
+				
+				const baselayerAHN = new ImageryLayer({ url: "https://ahn.arcgisonline.nl/arcgis/rest/services/Hoogtebestand/AHN4_DTM_50cm/ImageServer" });
+                const basemapAHN = new Basemap({
+                    baseLayers: [baselayerAHN],
+                    title: "Hoogtekaart",
+                    thumbnailUrl: "images/ahn.png"
+                });
+				
+				//================================================
+				// SETUP BASEMAPGALERY achter knop 1 - end 
+				//================================================	
+
+				//================================================
+				// SETUP MAP- start
+				// set up van standaard viewer
+				//================================================
+				
+                const map = new Map({
+                    basemap: basemapTopo
+                });
+
+                const view = new MapView({
+                    map: map,
+                    container: "viewDiv",
+                    zoom: 3,
+                    center: {
+                        x: 120000,
+                        y: 450000,
+                        spatialReference: 28992
+                    }
+                });
+				
+				//================================================
+				// SETUP MAP- end
+				//================================================
+				
+				//================================================
+				// SETUP FORM - start 
+				//================================================
+				// Field elements for form
+				//================================================
+
+				//================================================
+				// config Naam Landschapselement field element
+				//================================================
+				
+				const NaamelementFieldElement = new FieldElement({
+					label: "Naam Element",
+					fieldName: "naam_element",
+					input: { // autocastable to TextBoxInput
+						type: "text-box",
+						maxLength: 150,
+						minLength: 0
+					}
+				});
+				
+				//================================================
+				// config Ouderdom field element (combobox)
+				//================================================
+				const OuderdomFieldElement = new FieldElement({
+					label: "Ouderdom",
+					fieldName: "ouderdom",
+					input: { // autocastable to combobox
+						type: "combo-box",
+						showNoValueOption: true
+					}
+				});
+				
+				//================================================				
+				// config Staat field element (combobox)
+				//================================================
+				const StaatFieldElement = new FieldElement({
+					label: "Staat",
+					fieldName: "staat",
+					input: { // autocastable to combobox
+						type: "combo-box",
+						showNoValueOption: true
+					}
+				});
+
+				//================================================
+				// config Landschappelijke ligging field element 
+				//================================================
+				const landsligFieldElement = new FieldElement({
+					label: "Landschappelijke Ligging",
+					fieldName: "landslig",
+					input: { // autocastable to TextBoxInput
+						type: "text-box",
+						maxLength: 150,
+						minLength: 0
+					}
+				});
+				
+				//================================================
+				// config Ontstaansgeschiedenis field element
+				//================================================
+				const ontstgeschFieldElement = new FieldElement({
+					label: "Ontstaansgeschiedenis",
+					fieldName: "ontstgesch",
+					input: { // autocastable to TextBoxInput
+						type: "text-box",
+						maxLength: 150,
+						minLength: 0
+					}
+				});
+				
+				//================================================
+				// config aanvullende info field element
+				//================================================
+				const aanvinfoFieldElement = new FieldElement({
+					label: "Aanvullende informatie",
+					fieldName: "aanv_info",
+					input: { // autocastable to TextBoxInput
+						type: "text-box",
+						maxLength: 150,
+						minLength: 0
+					}
+				});
+				
+				//================================================
+				// config literatuur field element 
+				//================================================
+				const literatuurFieldElement = new FieldElement({
+					label: "Literatuur",
+					fieldName: "literatuur",
+					input: { // autocastable to TextBoxInput
+						type: "text-box",
+						maxLength: 150,
+						minLength: 0
+					}
+				});
+				
+				//================================================
+				// config Bronnen field element 
+				//================================================
+				const BronnenFieldElement = new FieldElement({
+					label: "Bronnen",
+					fieldName: "bron",
+					input: { // autocastable to TextBoxInput
+						type: "text-box",
+						maxLength: 150,
+						minLength: 0
+					}
+				});
+				
+				//================================================
+				// config Naam field element + field calculator
+				//================================================
+				const naamFieldElement = new FieldElement({
+					label: "NAAM",
+					editableExpression: "false",
+					fieldName: "naam",
+					input: { // autocastable to TextBoxInput
+					type: "text-box",
+					maxLength: 4000,
+					minLength: 0
+					},
+					//visibilityExpression: "alwaysHidden",
+					valueExpression: "Text('" + leesteken + "')"
+				});
+				
+				//================================================
+				// config Naam Toevoeger field element + field calculator
+				//================================================
+				const naamtoevoegerFieldElement = new FieldElement({
+					label: "Naam Toevoeger",
+					editableExpression: "false",
+					fieldName: "naamtoevoeger",
+					//visibilityExpression: "alwaysHidden",
+					input: { // autocastable to TextBoxInput
+						type: "text-box",
+						maxLength: 150,
+						minLength: 0
+					},
+					valueExpression: "Text('" + gebruiker + "')"
+				});
+				
+				//================================================				
+				// config tijdstip field element + field calculator
+				//================================================
+				
+				const tijdstipFieldElement = new FieldElement({
+					label: "Tijdstip",
+					fieldName: "tijdstip",
+					input: { // autocastable to TextBoxInput
+						type: "date-picker"
+					},
+					valueExpression: "Date(Now())",
+					editableExpression: "false"
+				});
+
+				//================================================
+				// grouping of fields in form voor eigenschappen en bronnen 
+				//================================================				
+
+				const LSEdatagroupElement = new GroupElement({
+					label: "Eigenschappen Leestekens",
+					elements: [NaamelementFieldElement, OuderdomFieldElement, StaatFieldElement, landsligFieldElement, ontstgeschFieldElement, aanvinfoFieldElement],
+					initialState: "expanded" //collapsed
+				});
+				
+				const LSEmetagroupElement = new GroupElement({
+					label: "Bronnen",
+					elements: [literatuurFieldElement, BronnenFieldElement, naamFieldElement, naamtoevoegerFieldElement, tijdstipFieldElement],
+					initialState: "collapsed" //expanded
+				});	
+
+				//================================================
+				// creeer FORM template 
+				//================================================		
+				
+				const LSETemplate = new FormTemplate({
+					title: "Vul de gegevens aan over het element",
+					description: "hoe meer gegevens hoe waardevoller de registratie",
+						elements: [LSEdatagroupElement, LSEmetagroupElement],
+						expressionInfos: []
+				});
+				
+				//================================================
+				//SETUP FORM end  
+				//================================================		
+				
+				//================================================
+				// SETUP editlayer en viewlayer -  start
+				//================================================
+				// set up van de verschillende queries en namen van de objecten
+				//================================================	
+				
+                const definitionQueryEditLayer = "NAAM='" + leesteken + "' AND NAAMTOEVOEGER='" + gebruiker + "'";    // edit alleen op je eigen features
+                const definitionQueryViewLayer = "NAAM='" + leesteken + "' AND NAAMTOEVOEGER<>'" + gebruiker + "'";   // view alleen die van anderen
+
+                const layerId = (editType === "Polygon") ? 2 : (editType === "Line") ? 1 : (editType === "Point") ? 0 : null;
+                const editLayer = new FeatureLayer({
+                    url: "https://geo.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschap_edit/FeatureServer/" + layerId +"?token="+ token,
+                    definitionExpression: definitionQueryEditLayer,
+                    outFields: ['*'],
+					formTemplate: LSETemplate
+				});
+
+				//================================================
+				// set up van de verschillende queries viewlayers
+				//================================================
+				
+                const viewLayer = new MapImageLayer({
+                    url: "https://geo.rug.nl/arcgis/rest/services/Landschapsleestekens/Leestekenslandschapview/MapServer",
+                    sublayers: [
+                        {
+                            id: 0,
+                            visible: (layerId == 0),
+                            definitionExpression: definitionQueryViewLayer
+                        },
+                        {
+                            id: 1,
+                            visible: (layerId == 1),
+                            definitionExpression: definitionQueryViewLayer
+                        },
+                        {
+                            id: 2,
+                            visible: (layerId == 2),
+                            definitionExpression: definitionQueryViewLayer
+                        }
+                    ]
+                });
+				//================================================
+				// SETUP editlayer en viewlayer -  end
+				//================================================
+				
+				//================================================
+				//SETUP MAPVIEWER - start
+				//================================================
+				
+				//================================================
+				//add layers to map
+				//================================================
+				
+                map.addMany([viewLayer, editLayer]);
+				
+				//================================================
+				//add basemap gallery to map
+				//================================================
+
+                const basemapGallery = new BasemapGallery({
+                    view: view,
+                    source: [basemapTopo, basemapLufo, basemapBonne, basemapAHN]					
+                });
+                const basemapGalleryExpand = new Expand({
+                    view: view,
+                    content: basemapGallery,
+                    expanded: false,
+                    expandTooltip: "Achtergrondkaart",
+					container:"basemapGalleryDiv"
+                });
+
+				//================================================
+				// add other widgets in map
+				//================================================
+				
+                let locateWidget = new Locate({
+                    view: view
+                });
+
+				view.ui.add(locateWidget, "top-left");
+                
+				//================================================
+				// configure editor in map
+				//================================================	
+				const editor = new Editor({
+					label: "editor",
+					view: view,
+					container: "templateDiv",
+					supportingWidgetDefaults: {
+						featureForm: {
+							groupDisplay: "sequential"
+						}
+					}
+				});
+			
+				//================================================
+				// hide unused elements editor
+				//================================================	
+			
+				editor.visibleElements = {
+					settingsMenu: false, // geen instellingen tonen
+					editFeaturesSection: false, // bestaande features niet bewerken
+				};
+
+            });
+    </script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+    <div id="templateDiv"></div>
+	<div id="basemapGalleryDiv"></div>
+</body>
+
+</html>
